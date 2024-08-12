@@ -19,7 +19,7 @@ StudentWorld::~StudentWorld()
 {
 	cleanUp();
 }
-Tunnelman * StudentWorld::getPlayer()
+Tunnelman * StudentWorld::getPlayer() const
 {
 	return m_player;
 }
@@ -28,7 +28,7 @@ void StudentWorld::updateDisplayText()
 	int score = getScore();
 	int level = getLevel();
 	int lives = getLives();
-	int health = m_player->getHP();
+	int health = m_player->gethp();
 	int squirts = m_player->getWtr();
 	int gold = m_player->getGld();
 	int sonar = m_player->getSonar();
