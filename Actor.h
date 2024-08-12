@@ -165,6 +165,7 @@ class RegularProtester : public Protester
 {
 public:
     RegularProtester(StudentWorld* world);
+    virtual void doSomething();
 };
 
 class HardcoreProtester : public Protester

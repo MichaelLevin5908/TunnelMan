@@ -92,100 +92,99 @@ void Tunnelman::doSomething()
         getWorld()->playSound(SOUND_DIG);
     }
 
-    int input;
-    if (getWorld()->getKey(input) == true) 
+    int ch;
+
+    if (getWorld()->getKey(ch) == true) 
     {
-        // User hit a key this tick!
-        switch (input)
+        
+        if (ch == KEY_PRESS_ESCAPE)
         {
-            case KEY_PRESS_ESCAPE:
-                die();
-                break;
-
-            case KEY_PRESS_LEFT:
-                moveInDirection(left);
-                break;
-
-            case KEY_PRESS_RIGHT:
-                moveInDirection(right);
-                break;
-
-            case KEY_PRESS_UP:
-                moveInDirection(up);
-                break;
-
-            case KEY_PRESS_DOWN:
-                moveInDirection(down);
-                break;
-
-            case KEY_PRESS_SPACE:
-                if (m_wtr > 0) 
-                {
-                    m_wtr--;
-                    shoot();
-                }
-                break;
-
-            case 'z':
-            case 'Z': // Use sonar kit
-                if (m_sonar > 0)
-                {
-                    m_sonar--;
-                    getWorld()->detectNearActors(getX(), getY(), 12);
-                    getWorld()->playSound(SOUND_SONAR);
-                }
-                break;
-
-            case KEY_PRESS_TAB: // Bribe with gold
-                if (m_gld > 0) 
-                {
-                    getWorld()->addActor(new Gold(getWorld(), getX(), getY(), true, true));
-                    m_gld--;
-                }
-                break;
+            die();
+        }
+        else if (ch == KEY_PRESS_LEFT)
+        {
+            moveInDirection(left);
+        }
+        else if (ch == KEY_PRESS_RIGHT)
+        {
+            moveInDirection(right);
+        }
+        else if (ch == KEY_PRESS_UP)
+        {
+            moveInDirection(up);
+        }
+        else if (ch == KEY_PRESS_DOWN)
+        {
+            moveInDirection(down);
+        }
+        else if (ch == KEY_PRESS_SPACE)
+        {
+            if (m_wtr > 0) 
+            {
+                m_wtr--;
+                shoot();
+            }
+        }
+        else if (ch == 'z' || ch == 'Z') 
+        {
+            if (m_sonar > 0)
+            {
+                m_sonar--;
+                getWorld()->detectNearActors(getX(), getY(), 12);
+                getWorld()->playSound(SOUND_SONAR);
+            }
+        }
+        else if (ch == KEY_PRESS_TAB) 
+        {
+            if (m_gld > 0) 
+            {
+                getWorld()->addActor(new Gold(getWorld(), getX(), getY(), true, true));
+                m_gld--;
+            }
         }
     }
 }
 
 
+
 void Tunnelman::shoot() 
 {
-    switch (getDirection()) 
+    if (getDirection() == left)
     {
-        case left:
-            if (!getWorld()->isThereEarth(getX() - 4, getY()) && !getWorld()->isThereBoulder(getX() - 4, getY())) 
-            {
-                getWorld()->addActor(new Squirt(getWorld(), getX() - 4, getY(), getDirection()));
-            }
-            break;
-
-        case right:
-            if (!getWorld()->isThereEarth(getX() + 4, getY()) && !getWorld()->isThereBoulder(getX() + 4, getY())) 
-            {
-                getWorld()->addActor(new Squirt(getWorld(), getX() + 4, getY(), getDirection()));
-            }
-            break;
-
-        case down:
-            if (!getWorld()->isThereEarth(getX(), getY() - 4) && !getWorld()->isThereBoulder(getX(), getY() - 4)) 
-            {
-                getWorld()->addActor(new Squirt(getWorld(), getX(), getY() - 4, getDirection()));
-            }
-            break;
-
-        case up:
-            if (!getWorld()->isThereEarth(getX(), getY() + 4) && !getWorld()->isThereBoulder(getX(), getY() + 4)) 
-            {
-                getWorld()->addActor(new Squirt(getWorld(), getX(), getY() + 4, getDirection()));
-            }
-            break;
-
-        case none:
-            return;
+        if (!getWorld()->isThereEarth(getX() - 4, getY()) && !getWorld()->isThereBoulder(getX() - 4, getY())) 
+        {
+            getWorld()->addActor(new Squirt(getWorld(), getX() - 4, getY(), getDirection()));
+        }
+    }
+    else if (getDirection() == right)
+    {
+        if (!getWorld()->isThereEarth(getX() + 4, getY()) && !getWorld()->isThereBoulder(getX() + 4, getY())) 
+        {
+            getWorld()->addActor(new Squirt(getWorld(), getX() + 4, getY(), getDirection()));
+        }
+    }
+    else if (getDirection() == down)
+    {
+        if (!getWorld()->isThereEarth(getX(), getY() - 4) && !getWorld()->isThereBoulder(getX(), getY() - 4)) 
+        {
+            getWorld()->addActor(new Squirt(getWorld(), getX(), getY() - 4, getDirection()));
+        }
+    }
+    else if (getDirection() == up)
+    {
+        if (!getWorld()->isThereEarth(getX(), getY() + 4) && !getWorld()->isThereBoulder(getX(), getY() + 4)) 
+        {
+            getWorld()->addActor(new Squirt(getWorld(), getX(), getY() + 4, getDirection()));
+        }
+    }
+    else
+    {
+        return;
     }
 
     getWorld()->playSound(SOUND_PLAYER_SQUIRT);
 }
+
 
 void Tunnelman::isAnnoyed(int hp)
 {
@@ -197,25 +196,27 @@ void Tunnelman::isAnnoyed(int hp)
 	}
 }
 
+
 void Tunnelman::moveInDirection(Direction direction)
 {
-    switch (direction) 
+    if (direction == left) 
     {
-        case left:
-            if (getDirection() == left) 
+        if (getDirection() == left) 
+        {
+            if (!getWorld()->isThereBoulder(getX() - 1, getY())) 
             {
-                if (!getWorld()->isThereBoulder(getX() - 1, getY())) 
-                {
-                    moveTo(getX() - 1, getY());
-                }
-            } 
-            else 
-            {
-                setDirection(left);
+                moveTo(getX() - 1, getY());
             }
-            break;
-            
-        case right:
+        } 
+        else 
+        {
+            setDirection(left);
+        }
+    }
+    else 
+    {
+        if (direction == right) 
+        {
             if (getDirection() == right) 
             {
                 if (!getWorld()->isThereBoulder(getX() + 1, getY())) 
@@ -227,42 +228,47 @@ void Tunnelman::moveInDirection(Direction direction)
             {
                 setDirection(right);
             }
-            break;
-            
-        case up:
-            if (getDirection() == up) 
+        }
+        else 
+        {
+            if (direction == up) 
             {
-                if (!getWorld()->isThereBoulder(getX(), getY() + 1)) 
+                if (getDirection() == up) 
                 {
-                    moveTo(getX(), getY() + 1);
+                    if (!getWorld()->isThereBoulder(getX(), getY() + 1)) 
+                    {
+                        moveTo(getX(), getY() + 1);
+                    }
+                } 
+                else 
+                {
+                    setDirection(up);
                 }
-            } 
+            }
             else 
             {
-                setDirection(up);
-            }
-            break;
-            
-        case down:
-            if (getDirection() == down) 
-            {
-                if (!getWorld()->isThereBoulder(getX(), getY() - 1)) 
+                if (direction == down) 
                 {
-                    moveTo(getX(), getY() - 1);
+                    if (getDirection() == down) 
+                    {
+                        if (!getWorld()->isThereBoulder(getX(), getY() - 1)) 
+                        {
+                            moveTo(getX(), getY() - 1);
+                        }
+                    } 
+                    else 
+                    {
+                        setDirection(down);
+                    }
                 }
-            } 
-            else 
-            {
-                setDirection(down);
+                else
+                {
+                    return;
+                }
             }
-            break;
-
-        case none:
-            return;
+        }
     }
 }
-
-
 
 int Tunnelman::getWtr() const
 	{
@@ -351,48 +357,77 @@ void Boulder::annoyMan()
 
 //Squirt
 Squirt::Squirt(StudentWorld* world, int startX, int startY, Direction dir):Actor(world, TID_WATER_SPURT, startX, startY, dir, 1.0, 1),m_travel(0) {}
+
 void Squirt::doSomething() {
 	if (!isAlive())
 	{ 
 		return;
 	}
-	if (annoyProtesters()||m_travel == 4 )
+	
+	if (annoyProtesters() || m_travel == 4)
 	{
 		die();
 		return;
 	}
-	switch (getDirection()) {
-	case left:
+
+	Direction dir = getDirection();
+	
+	if (dir == left)
+	{
 		if (getWorld()->isThereEarth(getX() - 1, getY()) || getWorld()->isThereBoulder(getX() - 1, getY()))
 		{
-			die(); return;
+			die();
+			return;
 		}
-		else   moveTo(getX() - 1, getY());
-		break;
-	case right:
+		else
+		{
+			moveTo(getX() - 1, getY());
+		}
+	}
+	else if (dir == right)
+	{
 		if (getWorld()->isThereEarth(getX() + 1, getY()) || getWorld()->isThereBoulder(getX() + 1, getY()))
 		{
-			die(); return;
+			die();
+			return;
 		}
-		else   moveTo(getX() + 1, getY());  
-		break;
-	case up:
+		else
+		{
+			moveTo(getX() + 1, getY());
+		}
+	}
+	else if (dir == up)
+	{
 		if (getWorld()->isThereEarth(getX(), getY() + 1) || getWorld()->isThereBoulder(getX(), getY() + 1))
 		{
-			die(); return;
+			die();
+			return;
 		}
-		else moveTo(getX(), getY() + 1);
-		break;
-	case down:
-		if (getWorld()->isThereEarth(getX(), getY() - 1) || getWorld()->isThereBoulder(getX(), getY() - 1)) {
-			die(); return;
+		else
+		{
+			moveTo(getX(), getY() + 1);
 		}
-		else moveTo(getX(), getY() - 1);
-		break;
-    case none : return;
 	}
+	else if (dir == down)
+	{
+		if (getWorld()->isThereEarth(getX(), getY() - 1) || getWorld()->isThereBoulder(getX(), getY() - 1))
+		{
+			die();
+			return;
+		}
+		else
+		{
+			moveTo(getX(), getY() - 1);
+		}
+	}
+	else
+	{
+		return;
+	}
+
 	m_travel++;
 }
+
 
 bool Squirt::annoyProtesters()
 	{
@@ -589,15 +624,20 @@ void Protester::doSomething()
 	{
 		Direction k = none;
 		k = randomDirection();
-		while (true) {
+		while (true)
+		{
 			k = randomDirection();
-			if (getWorld()->canMoveInDirection(getX(),getY(), k)) break;
+			if (getWorld()->canMoveInDirection(getX(),getY(), k))
+			{
+				break;
+			}
 		}
 		setDirection(k);
 		randomNumToMove();
 	}
 	
-	else if (isAtIntersection() && m_tickSinceLastTurn > 200) {
+	else if (isAtIntersection() && m_tickSinceLastTurn > 200)
+	{
 		pickViableDirectionToTurn();
 		m_tickSinceLastTurn = 0;
 		randomNumToMove();
@@ -613,49 +653,84 @@ void Protester::doSomething()
 
 void Protester::moveInDirection(Direction direction)
 {
-	switch (direction) {
-	case left:
-		if (getDirection() == left) 
-			{
-				if (getX() == 0) setDirection(right);
-					{
-						moveTo(getX() - 1, getY());
-					}
-			}
-		else setDirection(left);
-		break;
-	case right:
-		if (getDirection() == right) {
-			if (getX() == 60) setDirection(left);
-				{
-					moveTo(getX() + 1, getY());
-				}
-		}
-		else setDirection(right);
-		break;
-	case up:
-		if (getDirection() == up) 
-			{
-				if (getY() == 60) setDirection(down);
-				{
-					moveTo(getX(), getY() + 1);
-				}
-			}
-		else setDirection(up);
-		break;
-	case down:
-		if (getDirection() == down) 
-			{
-				if (getY() == 0) setDirection(up);
-					{
-						moveTo(getX(), getY() - 1);
-					}
-			}
-		else setDirection(down);
-		break;
-    case none: return;
-	}
+    if (direction == left) 
+    {
+        if (getDirection() == left) 
+        {
+            if (getX() == 0) 
+            {
+                setDirection(right);
+            }
+            else
+            {
+                moveTo(getX() - 1, getY());
+            }
+        } 
+        else 
+        {
+            setDirection(left);
+        }
+    }
+    else if (direction == right) 
+    {
+        if (getDirection() == right) 
+        {
+            if (getX() == 60) 
+            {
+                setDirection(left);
+            }
+            else
+            {
+                moveTo(getX() + 1, getY());
+            }
+        } 
+        else 
+        {
+            setDirection(right);
+        }
+    }
+    else if (direction == up) 
+    {
+        if (getDirection() == up) 
+        {
+            if (getY() == 60) 
+            {
+                setDirection(down);
+            }
+            else
+            {
+                moveTo(getX(), getY() + 1);
+            }
+        } 
+        else 
+        {
+            setDirection(up);
+        }
+    }
+    else if (direction == down) 
+    {
+        if (getDirection() == down) 
+        {
+            if (getY() == 0) 
+            {
+                setDirection(up);
+            }
+            else
+            {
+                moveTo(getX(), getY() - 1);
+            }
+        } 
+        else 
+        {
+            setDirection(down);
+        }
+    }
+    else
+    {
+        return;
+    }
 }
+
 
 
 
@@ -698,47 +773,60 @@ bool Protester::straightPathToPlayer(Direction direction)
     int playerX = getWorld()->getPlayer()->getX();
     int playerY = getWorld()->getPlayer()->getY(); // Corrected to getY(), not getX()
 
-    switch (direction) 
+    if (direction == left)
     {
-        case left:
-            for (int i = getX(); i >= playerX; i--) 
+        for (int i = getX(); i >= playerX; i--) 
+        {
+            if (getWorld()->isThereEarth(i, getY()) || getWorld()->isThereBoulder(i, getY()))
             {
-                if (getWorld()->isThereEarth(i, getY()) || getWorld()->isThereBoulder(i, getY()))
-                    return false;
+                return false;
             }
-            return true;
-
-        case right:
-            for (int i = getX(); i <= playerX; i++) 
+        }
+        return true;
+    }
+    else if (direction == right)
+    {
+        for (int i = getX(); i <= playerX; i++) 
+        {
+            if (getWorld()->isThereEarth(i, getY()) || getWorld()->isThereBoulder(i, getY()))
             {
-                if (getWorld()->isThereEarth(i, getY()) || getWorld()->isThereBoulder(i, getY()))
-                    return false;
+                return false;
             }
-            return true;
-
-        case up:
-            for (int j = getY(); j <= playerY; j++) 
+        }
+        return true;
+    }
+    else if (direction == up)
+    {
+        for (int j = getY(); j <= playerY; j++) 
+        {
+            if (getWorld()->isThereEarth(getX(), j) || getWorld()->isThereBoulder(getX(), j))
             {
-                if (getWorld()->isThereEarth(getX(), j) || getWorld()->isThereBoulder(getX(), j))
-                    return false;
+                return false;
             }
-            return true;
-
-        case down:
-            for (int j = getY(); j >= playerY; j--) 
+        }
+        return true;
+    }
+    else if (direction == down)
+    {
+        for (int j = getY(); j >= playerY; j--) 
+        {
+            if (getWorld()->isThereEarth(getX(), j) || getWorld()->isThereBoulder(getX(), j))
             {
-                if (getWorld()->isThereEarth(getX(), j) || getWorld()->isThereBoulder(getX(), j))
-                    return false;
+                return false;
             }
-            return true;
-
-        case none:
-            return false;
-
-        default:
-            return false; 
+        }
+        return true;
+    }
+    else if (direction == none)
+    {
+        return false;
+    }
+    else
+    {
+        return false;
     }
 }
+
 
 GraphObject::Direction Protester::randomDirection()
 {
@@ -863,25 +951,35 @@ void Protester::getBribed()
 
 bool Protester::isFacingPlayer()
 {
-	switch (getDirection()) {
-		case left: 
-			return getWorld()->getPlayer()->getX() <= getX(); 
-		case right:
-			return getWorld()->getPlayer()->getX() >= getX();
-		case up:
-			return getWorld()->getPlayer()->getY() >= getY();
-		case down:
-			return getWorld()->getPlayer()->getY() <= getY();
-        case none:
-            return false;
-	}
-    return false;
+    if (getDirection() == left) 
+    {
+        return getWorld()->getPlayer()->getX() <= getX();
+    }
+    else if (getDirection() == right) 
+    {
+        return getWorld()->getPlayer()->getX() >= getX();
+    }
+    else if (getDirection() == up) 
+    {
+        return getWorld()->getPlayer()->getY() >= getY();
+    }
+    else if (getDirection() == down) 
+    {
+        return getWorld()->getPlayer()->getY() <= getY();
+    }
+    else if (getDirection() == none) 
+    {
+        return false;
+    }
+    else 
+    {
+        return false;
+    }
 }
+
 
 //RegularProtester
 RegularProtester::RegularProtester(StudentWorld* world): Protester(world, TID_PROTESTER, 5) {}
-
-
 
 //HardcoreProtester
 HardcoreProtester::HardcoreProtester(StudentWorld* world): Protester(world, TID_HARD_CORE_PROTESTER, 20) {}
