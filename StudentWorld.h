@@ -50,6 +50,7 @@ public:
     GraphObject::Direction senseSignalFromPlayer(Protester* pr, int M);
 
 private:
+    bool iscompleted;
     bool m_isFirstTick;
     int m_tickSinceLast;
     int m_protestersAlive;

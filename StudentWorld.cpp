@@ -13,8 +13,7 @@ GameWorld* createStudentWorld(string assetDir)
     return new StudentWorld(assetDir);
 }
 
-StudentWorld::StudentWorld(std::string assetDir)
-    : GameWorld(assetDir), m_isFirstTick(true), m_tickSinceLast(0), m_protestersAlive(0), m_player(nullptr), m_barrelsLeft(0) {}
+StudentWorld::StudentWorld(std::string assetDir): GameWorld(assetDir), m_isFirstTick(true), m_tickSinceLast(0), m_protestersAlive(0), m_player(nullptr), m_barrelsLeft(0), iscompleted(false) {}
 
 StudentWorld::~StudentWorld()
 {
@@ -126,6 +125,10 @@ void StudentWorld::addProtesters()
 void StudentWorld::decBarrel()
 {
     m_barrelsLeft--;
+    if (m_barrelsLeft == 0)
+    {
+        iscompleted = true;
+    }
 }
 
 void StudentWorld::decProtester()
@@ -439,6 +442,7 @@ int StudentWorld::init()
     m_isFirstTick = true;
     m_tickSinceLast = 0;
     m_protestersAlive = 0;
+    iscompleted = false;
 
     for (int x = 0; x < 64; x++)
     {
@@ -448,62 +452,77 @@ int StudentWorld::init()
             {
                 m_earth[x][y] = new Earth(this, x, y);
             }
+            else
+            {
+                m_earth[x][y] = nullptr;
+            }
         }
     }
 
+    // Create the player (Tunnelman)
     m_player = new Tunnelman(this);
 
-    int B = min((int)getLevel() / 2 + 2, 9);
-    int G = max((int)getLevel() / 2, 2);
-    int L = min(2 + (int)getLevel(), 21);
+    // Calculate the number of Boulders, Gold Nuggets, and Barrels of Oil
+    const int level = getLevel();
+    const int numBoulders = std::min(level / 2 + 2, 9);
+    const int numGoldNuggets = std::max(level / 2, 2);
+    const int numBarrels = std::min(2 + level, 21);
 
-    addBoulderorGoldorBarrel(B, 'B');
-    addBoulderorGoldorBarrel(L, 'L');
-    addBoulderorGoldorBarrel(G, 'G');
+    // Add actors to the game world based on the calculated numbers
+    addBoulderorGoldorBarrel(numBoulders, 'B');
+    addBoulderorGoldorBarrel(numBarrels, 'L');
+    addBoulderorGoldorBarrel(numGoldNuggets, 'G');
 
     return GWSTATUS_CONTINUE_GAME;
 }
 
 int StudentWorld::move()
 {
+    
     updateDisplayText();
 
-    vector<Actor*>::iterator it;
-    for (it = m_actors.begin(); it != m_actors.end(); it++)
+    
+    for (size_t i = 0; i < m_actors.size(); i++)
     {
-        if ((*it)->isAlive())
+        if (m_actors[i]->isAlive())
         {
-            (*it)->doSomething();
-        }
-        if (!m_player->isAlive())
-        {
-            decLives();
-            return GWSTATUS_PLAYER_DIED;
-        }
-        if (m_barrelsLeft == 0)
-        {
-            return GWSTATUS_FINISHED_LEVEL;
+            m_actors[i]->doSomething();
+
+            if (!m_player->isAlive())
+            {
+                decLives();
+                return GWSTATUS_PLAYER_DIED;
+            }
+
+            if (iscompleted)
+            {
+                return GWSTATUS_FINISHED_LEVEL;
+            }
         }
     }
 
     m_player->doSomething();
+
+    
     addGoodies();
     addProtesters();
 
-    for (it = m_actors.begin(); it != m_actors.end();)
+    for (size_t i = 0; i < m_actors.size(); )
     {
-        if (!(*it)->isAlive())
+        if (!m_actors[i]->isAlive())
         {
-            delete *it;
-            it = m_actors.erase(it);
+            delete m_actors[i];
+            m_actors.erase(m_actors.begin() + i);
         }
         else
         {
-            it++;
+            i++;
         }
     }
+
     return GWSTATUS_CONTINUE_GAME;
 }
+
 
 void StudentWorld::cleanUp()
 {
