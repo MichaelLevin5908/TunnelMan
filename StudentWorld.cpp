@@ -526,19 +526,28 @@ int StudentWorld::move()
 
 void StudentWorld::cleanUp()
 {
-    for (int x = 0; x < 64; x++)
+    // Cleanup Earth objects
+    int x = 0;
+    while (x < 64)
     {
-        for (int y = 0; y < 60; y++)
+        int y = 0;
+        while (y < 60)
         {
-            delete m_earth[x][y];
+            delete m_earth[x][y]; 
+            m_earth[x][y] = nullptr; 
+            y++;
         }
+        x++;
     }
 
-    vector<Actor*>::iterator it;
-    for (it = m_actors.begin(); it != m_actors.end(); it++)
+    
+    while (!m_actors.empty())
     {
-        delete *it;
+        delete m_actors.back();
+        m_actors.pop_back(); 
     }
-    m_actors.clear();
+
+    
     delete m_player;
+    m_player = nullptr; 
 }
