@@ -298,8 +298,8 @@ void StudentWorld::initializeMaze()
 
 void StudentWorld::performBFS(int startX, int startY)
 {
-    std::queue<Grid> q;
-    q.push(Grid(startX, startY));
+    std::queue<grid> q;
+    q.push(grid(startX, startY));
     m_maze[startX][startY] = 1;
 
     const int dx[] = {-1, 1, 0, 0};
@@ -307,11 +307,11 @@ void StudentWorld::performBFS(int startX, int startY)
 
     while (!q.empty())
     {
-        Grid current = q.front();
+        grid current = q.front();
         q.pop();
 
-        int currentX = current.x;
-        int currentY = current.y;
+        int currentX = current.m_x;
+        int currentY = current.m_y;
 
         for (int i = 0; i < 4; ++i)
         {
@@ -320,7 +320,7 @@ void StudentWorld::performBFS(int startX, int startY)
 
             if (canMoveInDirection(currentX, currentY, static_cast<GraphObject::Direction>(i)) && m_maze[nextX][nextY] == 0)
             {
-                q.push(Grid(nextX, nextY));
+                q.push(grid(nextX, nextY));
                 m_maze[nextX][nextY] = m_maze[currentX][currentY] + 1;
             }
         }
