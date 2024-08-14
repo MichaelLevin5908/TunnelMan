@@ -13,7 +13,7 @@ GameWorld* createStudentWorld(string assetDir)
     return new StudentWorld(assetDir);
 }
 
-StudentWorld::StudentWorld(std::string assetDir): GameWorld(assetDir), m_isFirstTick(true), m_tickSinceLast(0), m_protestersAlive(0), m_player(nullptr), m_barrelsLeft(0), iscompleted(false) {}
+StudentWorld::StudentWorld(std::string assetDir): GameWorld(assetDir), m_isFirstTick(true), m_tickSinceLast(0), m_protestersAlive(0), m_player(nullptr), m_barrelsLeft(0), m_isCompleted(false) {}
 
 StudentWorld::~StudentWorld()
 {
@@ -25,52 +25,63 @@ Tunnelman* StudentWorld::getPlayer() const
     return m_player;
 }
 
-void StudentWorld::updateDisplayText()
+void StudentWorld::setDisplayText()
 {
-    int score = getScore();
     int level = getLevel();
     int lives = getLives();
     int health = m_player->gethp();
     int squirts = m_player->getWtr();
     int gold = m_player->getGld();
+    int barrelsLeft = m_barrelsLeft;
     int sonar = m_player->getSonar();
+    int score = getScore();
 
-    string s = displayText(score, level, lives, health, squirts, gold, sonar, m_barrelsLeft);
+    string s = displayText(level, lives, health, squirts, gold, barrelsLeft, sonar, score);
     setGameStatText(s);
 }
 
-string StudentWorld::displayText(int score, int level, int lives, int health, int squirts, int gold, int sonar, int barrels)
+string StudentWorld::displayText(int level, int lives, int health, int squirts, int gold, int barrels, int sonar, int score)
 {
     stringstream s;
     s.fill('0');
-    s << "Scr: " << setw(6) << score;
+    s << "Lvl: " << setw(2) << level;
     s.fill(' ');
-    s << " Lvl: " << setw(2) << level;
-    s << " Lives: " << setw(1) << lives;
+    s << "  Lives: " << setw(1) << lives;
     s << "  Hlth: " << setw(3) << health * 10 << '%';
     s << "  Wtr: " << setw(2) << squirts;
     s << "  Gld: " << setw(2) << gold;
-    s << "  Sonar: " << setw(2) << sonar;
     s << "  Oil Left: " << setw(2) << barrels;
+    s << "  Sonar: " << setw(2) << sonar;
+    s.fill('0');
+    s << "  Scr: " << setw(6) << score;
     return s.str();
+}
+
+
+void StudentWorld::removeEarthAt(int i, int j, bool* cleared = nullptr)
+{
+    if (m_earth[i][j] != nullptr)
+    {
+        delete m_earth[i][j];
+        m_earth[i][j] = nullptr;
+        if (cleared)
+        {
+            *cleared = true;
+        }
+    }
 }
 
 bool StudentWorld::digEarth(int x, int y)
 {
-    bool clear = false;
+    bool cleared = false;
     for (int i = x; i < x + 4; i++)
     {
         for (int j = y; j < y + 4; j++)
         {
-            if (m_earth[i][j] != nullptr)
-            {
-                delete m_earth[i][j];
-                m_earth[i][j] = nullptr;
-                clear = true;
-            }
+            removeEarthAt(i, j, &cleared);
         }
     }
-    return clear;
+    return cleared;
 }
 
 void StudentWorld::addActor(Actor* actor)
@@ -80,41 +91,62 @@ void StudentWorld::addActor(Actor* actor)
 
 void StudentWorld::addGoodies()
 {
-    int x, y;
-    int G = (int)getLevel() + 300;
-    if (int(rand() % G) + 1 == 1)
+    int G = getLevel() * 25 + 300;
+    if (rand() % G == 0)  
     {
-        if (int(rand() % 5) + 1 == 1)
+        if (rand() % 5 == 0)  
         {
             addActor(new Sonar(this, 0, 60));
         }
-        else
+        else  
         {
-            do
+            static std::vector<int> validX;
+            static std::vector<int> validY;
+
+            
+            validX.clear();
+            validY.clear();
+
+            for (int x = 0; x <= 60; ++x)
             {
-                x = rand() % 60 + 1;
-                y = rand() % 60 + 1;
-            } while (isThereEarth(x, y));
-            addActor(new WaterPool(this, x, y));
+                for (int y = 0; y <= 60; ++y)
+                {
+                    if (!isThereEarth(x, y))
+                    {
+                        validX.push_back(x);
+                        validY.push_back(y);
+                    }
+                }
+            }
+            if (!validX.empty())
+            {
+                int index = rand() % validX.size();
+                addActor(new WaterPool(this, validX[index], validY[index]));
+            }
         }
     }
 }
+
 
 void StudentWorld::addProtesters()
 {
     int T = max(25, 200 - (int)getLevel());
     int P = fmin(15, 2 + getLevel() * 1.5);
     int probabilityOfHardcore = min(90, (int)getLevel() * 10 + 30);
+
     if (m_isFirstTick || (m_tickSinceLast > T && m_protestersAlive < P))
     {
-        if (rand() % 100 + 1 < probabilityOfHardcore)
+        Actor* protester;
+        if (rand() % 100 < probabilityOfHardcore)
         {
-            addActor(new HardcoreProtester(this));
+            protester = new HardcoreProtester(this);
         }
         else
         {
-            addActor(new RegularProtester(this));
+            protester = new RegularProtester(this);
         }
+        
+        addActor(protester);
         m_tickSinceLast = 0;
         m_protestersAlive++;
         m_isFirstTick = false;
@@ -122,13 +154,18 @@ void StudentWorld::addProtesters()
     m_tickSinceLast++;
 }
 
+bool StudentWorld::isCompleted()
+{
+    if (m_barrelsLeft == 0)
+    {
+        m_isCompleted = true;
+    }
+}
+
 void StudentWorld::decBarrel()
 {
     m_barrelsLeft--;
-    if (m_barrelsLeft == 0)
-    {
-        iscompleted = true;
-    }
+    isCompleted();
 }
 
 void StudentWorld::decProtester()
@@ -138,27 +175,19 @@ void StudentWorld::decProtester()
 
 bool StudentWorld::withInRadius(int x1, int y1, int x2, int y2, int radius)
 {
-    if ((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2) <= radius * radius)
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+    return (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2) <= radius * radius;
 }
 
 bool StudentWorld::ActorsWithInRadius(int x, int y, int radius)
 {
-    vector<Actor*>::iterator it;
-    it = m_actors.begin();
-    while (it != m_actors.end())
+    for (Actor* actor : m_actors)
     {
-        if (withInRadius(x, y, (*it)->getX(), (*it)->getY(), radius))
+        int actorX = actor->getX();
+        int actorY = actor->getY();
+        if (withInRadius(x, y, actorX, actorY, radius))
         {
             return true;
         }
-        it++;
     }
     return false;
 }
@@ -166,70 +195,76 @@ bool StudentWorld::ActorsWithInRadius(int x, int y, int radius)
 void StudentWorld::addBoulderorGoldorBarrel(int num, char actor)
 {
     int x, y;
+    int yMin = 1;
+    int yMax = (actor == 'B') ? 36 + 20 : 56;
+
     for (int i = 0; i < num; i++)
     {
         do
         {
             x = rand() % 60 + 1;
-            if (actor == 'B')
-            {
-                y = rand() % 36 + 1 + 20;
-            }
-            else
-            {
-                y = rand() % 56 + 1;
-            }
+            y = rand() % (yMax - yMin + 1) + yMin;
         } while (ActorsWithInRadius(x, y, 6) || (x > 26 && x < 34 && y > 0));
 
-        if (actor == 'B')
+        switch (actor)
         {
-            addActor(new Boulder(this, x, y));
-        }
-        else if (actor == 'G')
-        {
-            addActor(new Gold(this, x, y, false, false));
-        }
-        else if (actor == 'L')
-        {
-            addActor(new Barrel(this, x, y));
-            m_barrelsLeft++;
+            case 'B':
+                addActor(new Boulder(this, x, y));
+                break;
+            case 'G':
+                addActor(new Gold(this, x, y, false, false));
+                break;
+            case 'L':
+                addActor(new Barrel(this, x, y));
+                m_barrelsLeft++;
+                break;
+            default:
+                break;
         }
     }
 }
 
-bool StudentWorld::isAboveEarth(int x, int y)
+bool StudentWorld::isEarthPresent(int x, int y, bool checkOnlyAbove = false)
 {
     for (int i = x; i < x + 4; i++)
     {
-        if (m_earth[i][y] != nullptr)
+        if (checkOnlyAbove)
         {
-            return true;
-        }
-    }
-    return false;
-}
-
-bool StudentWorld::isThereEarth(int x, int y)
-{
-    for (int i = x; i < x + 4; i++)
-    {
-        for (int j = y; j < y + 4; j++)
-        {
-            if (m_earth[i][j] != nullptr)
+            if (m_earth[i][y] != nullptr)
             {
                 return true;
             }
         }
+        else
+        {
+            for (int j = y; j < y + 4; j++)
+            {
+                if (m_earth[i][j] != nullptr)
+                {
+                    return true;
+                }
+            }
+        }
     }
     return false;
 }
 
+bool StudentWorld::isAboveEarth(int x, int y)
+{
+    return isEarthPresent(x, y, true);
+}
+
+bool StudentWorld::isThereEarth(int x, int y)
+{
+    return isEarthPresent(x, y, false);
+}
+
 bool StudentWorld::isThereBoulder(int x, int y, int radius)
 {
-    vector<Actor*>::iterator it;
-    for (it = m_actors.begin(); it != m_actors.end(); it++)
+    for (std::vector<Actor*>::iterator it = m_actors.begin(); it != m_actors.end(); ++it)
     {
-        if ((*it)->getID() == TID_BOULDER && withInRadius(x, y, (*it)->getX(), (*it)->getY(), radius))
+        Actor* actor = *it;
+        if (actor->getID() == TID_BOULDER && withInRadius(x, y, actor->getX(), actor->getY(), radius))
         {
             return true;
         }
@@ -237,33 +272,62 @@ bool StudentWorld::isThereBoulder(int x, int y, int radius)
     return false;
 }
 
+
 bool StudentWorld::canMoveInDirection(int x, int y, GraphObject::Direction direction)
 {
-    if (direction == GraphObject::left)
+    switch (direction)
     {
-        return (x != 0 && !isThereEarth(x - 1, y) && !isThereBoulder(x, y));
-    }
-    else if (direction == GraphObject::right)
-    {
-        return (x != 60 && !isThereEarth(x + 1, y) && !isThereBoulder(x + 1, y));
-    }
-    else if (direction == GraphObject::up)
-    {
-        return (y != 60 && !isThereEarth(x, y + 1) && !isThereBoulder(x, y + 1));
-    }
-    else if (direction == GraphObject::down)
-    {
-        return (y != 0 && !isThereEarth(x, y - 1) && !isThereBoulder(x, y - 1));
-    }
-    else if (direction == GraphObject::none)
-    {
-        return false;
-    }
-    else
-    {
-        return false;
+        case GraphObject::left:
+            return (x != 0 && !isThereEarth(x - 1, y) && !isThereBoulder(x - 1, y));
+        case GraphObject::right:
+            return (x != 60 && !isThereEarth(x + 1, y) && !isThereBoulder(x + 1, y));
+        case GraphObject::up:
+            return (y != 60 && !isThereEarth(x, y + 1) && !isThereBoulder(x, y + 1));
+        case GraphObject::down:
+            return (y != 0 && !isThereEarth(x, y - 1) && !isThereBoulder(x, y - 1));
+        case GraphObject::none:
+        default:
+            return false;
     }
 }
+
+void StudentWorld::initializeMaze()
+{
+    std::fill(&m_maze[0][0], &m_maze[0][0] + sizeof(m_maze) / sizeof(m_maze[0][0]), 0);
+}
+
+void StudentWorld::performBFS(int startX, int startY)
+{
+    std::queue<Grid> q;
+    q.push(Grid(startX, startY));
+    m_maze[startX][startY] = 1;
+
+    const int dx[] = {-1, 1, 0, 0};
+    const int dy[] = {0, 0, 1, -1};
+
+    while (!q.empty())
+    {
+        Grid current = q.front();
+        q.pop();
+
+        int currentX = current.x;
+        int currentY = current.y;
+
+        for (int i = 0; i < 4; ++i)
+        {
+            int nextX = currentX + dx[i];
+            int nextY = currentY + dy[i];
+
+            if (canMoveInDirection(currentX, currentY, static_cast<GraphObject::Direction>(i)) && m_maze[nextX][nextY] == 0)
+            {
+                q.push(Grid(nextX, nextY));
+                m_maze[nextX][nextY] = m_maze[currentX][currentY] + 1;
+            }
+        }
+    }
+}
+
+
 
 bool StudentWorld::isPlayerInRadius(Actor* actor, int radius)
 {
@@ -272,178 +336,56 @@ bool StudentWorld::isPlayerInRadius(Actor* actor, int radius)
 
 Protester* StudentWorld::protesterInRadius(Actor* actor, int radius)
 {
-    vector<Actor*>::iterator it;
-    for (it = m_actors.begin(); it != m_actors.end(); it++)
+    int actorX = actor->getX();
+    int actorY = actor->getY();
+
+    for (Actor* act : m_actors)
     {
-        if ((*it)->getID() == TID_PROTESTER || (*it)->getID() == TID_HARD_CORE_PROTESTER)
+        if (act->getID() == TID_PROTESTER || act->getID() == TID_HARD_CORE_PROTESTER)
         {
-            if (withInRadius(actor->getX(), actor->getY(), (*it)->getX(), (*it)->getY(), radius))
+            if (withInRadius(actorX, actorY, act->getX(), act->getY(), radius))
             {
-                return dynamic_cast<Protester*> (*it);
+                return dynamic_cast<Protester*>(act);
             }
         }
     }
     return nullptr;
 }
 
+
 void StudentWorld::moveToExit(Protester* pr)
 {
-    for (int i = 0; i < 64; i++)
-    {
-        for (int j = 0; j < 64; j++)
-        {
-            m_maze[i][j] = 0;
-        }
-    }
-    int a = pr->getX();
-    int b = pr->getY();
-    queue<Grid> q;
-    q.push(Grid(60, 60));
-    m_maze[60][60] = 1;
-    while (!q.empty())
-    {
-        Grid c = q.front();
-        q.pop();
-        int x = c.x;
-        int y = c.y;
+    initializeMaze();
 
-        if (canMoveInDirection(x, y, GraphObject::left) && m_maze[x - 1][y] == 0)
-        {
-            q.push(Grid(x - 1, y));
-            m_maze[x - 1][y] = m_maze[x][y] + 1;
-        }
+    int startX = 60; 
+    int startY = 60;
+    int targetX = pr->getX();
+    int targetY = pr->getY();
 
-        if (canMoveInDirection(x, y, GraphObject::right) && m_maze[x + 1][y] == 0)
-        {
-            q.push(Grid(x + 1, y));
-            m_maze[x + 1][y] = m_maze[x][y] + 1;
-        }
+    performBFS(startX, startY);
 
-        if (canMoveInDirection(x, y, GraphObject::up) && m_maze[x][y + 1] == 0)
-        {
-            q.push(Grid(x, y + 1));
-            m_maze[x][y + 1] = m_maze[x][y] + 1;
-        }
+    const int dx[] = {-1, 1, 0, 0};
+    const int dy[] = {0, 0, 1, -1};
+    const GraphObject::Direction directions[] = {
+        GraphObject::left, GraphObject::right,
+        GraphObject::up, GraphObject::down};
 
-        if (canMoveInDirection(x, y, GraphObject::down) && m_maze[x][y - 1] == 0)
-        {
-            q.push(Grid(x, y - 1));
-            m_maze[x][y - 1] = m_maze[x][y] + 1;
-        }
-    }
+    for (int i = 0; i < 4; ++i)
+    {
+        int nextX = targetX + dx[i];
+        int nextY = targetY + dy[i];
 
-    if (canMoveInDirection(a, b, GraphObject::left) && m_maze[a - 1][b] < m_maze[a][b])
-    {
-        pr->moveInDirection(GraphObject::left);
-    }
-    else if (canMoveInDirection(a, b, GraphObject::right) && m_maze[a + 1][b] < m_maze[a][b])
-    {
-        pr->moveInDirection(GraphObject::right);
-    }
-    else if (canMoveInDirection(a, b, GraphObject::up) && m_maze[a][b + 1] < m_maze[a][b])
-    {
-        pr->moveInDirection(GraphObject::up);
-    }
-    else if (canMoveInDirection(a, b, GraphObject::down) && m_maze[a][b - 1] < m_maze[a][b])
-    {
-        pr->moveInDirection(GraphObject::down);
-    }
-}
-
-void StudentWorld::detectNearActors(int x, int y, int radius)
-{
-    int a, b;
-    vector<Actor*>::iterator it;
-    for (it = m_actors.begin(); it != m_actors.end(); it++)
-    {
-        if ((*it)->getID() == TID_BARREL || (*it)->getID() == TID_GOLD)
+        if (canMoveInDirection(targetX, targetY, directions[i]) &&
+            m_maze[nextX][nextY] < m_maze[targetX][targetY])
         {
-            a = (*it)->getX();
-            b = (*it)->getY();
-            if ((x - a) * (x - a) + (y - b) * (y - b) <= radius * radius)
-            {
-                (*it)->setVisible(true);
-            }
+            pr->moveInDirection(directions[i]);
+            break;
         }
     }
 }
 
-GraphObject::Direction StudentWorld::senseSignalFromPlayer(Protester* pr, int M)
+void StudentWorld::addEarth()
 {
-    for (int i = 0; i < 64; i++)
-    {
-        for (int j = 0; j < 64; j++)
-        {
-            m_maze[i][j] = 0;
-        }
-    }
-    int a = pr->getX();
-    int b = pr->getY();
-    queue<Grid> q;
-    q.push(Grid(getPlayer()->getX(), getPlayer()->getY()));
-    m_maze[getPlayer()->getX()][getPlayer()->getY()] = 1;
-    while (!q.empty())
-    {
-        Grid c = q.front();
-        q.pop();
-        int x = c.x;
-        int y = c.y;
-
-        if (canMoveInDirection(x, y, GraphObject::left) && m_maze[x - 1][y] == 0)
-        {
-            q.push(Grid(x - 1, y));
-            m_maze[x - 1][y] = m_maze[x][y] + 1;
-        }
-
-        if (canMoveInDirection(x, y, GraphObject::right) && m_maze[x + 1][y] == 0)
-        {
-            q.push(Grid(x + 1, y));
-            m_maze[x + 1][y] = m_maze[x][y] + 1;
-        }
-
-        if (canMoveInDirection(x, y, GraphObject::up) && m_maze[x][y + 1] == 0)
-        {
-            q.push(Grid(x, y + 1));
-            m_maze[x][y + 1] = m_maze[x][y] + 1;
-        }
-
-        if (canMoveInDirection(x, y, GraphObject::down) && m_maze[x][y - 1] == 0)
-        {
-            q.push(Grid(x, y - 1));
-            m_maze[x][y - 1] = m_maze[x][y] + 1;
-        }
-    }
-
-    if (m_maze[a][b] <= M + 1)
-    {
-        if (canMoveInDirection(a, b, GraphObject::left) && m_maze[a - 1][b] < m_maze[a][b])
-        {
-            return GraphObject::left;
-        }
-        else if (canMoveInDirection(a, b, GraphObject::right) && m_maze[a + 1][b] < m_maze[a][b])
-        {
-            return GraphObject::right;
-        }
-        else if (canMoveInDirection(a, b, GraphObject::up) && m_maze[a][b + 1] < m_maze[a][b])
-        {
-            return GraphObject::up;
-        }
-        else if (canMoveInDirection(a, b, GraphObject::down) && m_maze[a][b - 1] < m_maze[a][b])
-        {
-            return GraphObject::down;
-        }
-    }
-    return GraphObject::none;
-}
-
-int StudentWorld::init()
-{
-    m_barrelsLeft = 0;
-    m_isFirstTick = true;
-    m_tickSinceLast = 0;
-    m_protestersAlive = 0;
-    iscompleted = false;
-
     for (int x = 0; x < 64; x++)
     {
         for (int y = 0; y < 60; y++)
@@ -458,20 +400,29 @@ int StudentWorld::init()
             }
         }
     }
+}
 
-    // Create the player (Tunnelman)
+void StudentWorld::addGameObjects(char objectType, int numObjects)
+{
+    addBoulderorGoldorBarrel(numObjects, objectType);
+}
+
+int StudentWorld::init()
+{
+    m_barrelsLeft = 0;
+    m_isFirstTick = true;
+    m_tickSinceLast = 0;
+    m_protestersAlive = 0;
+    m_isCompleted = false;
+
+    addEarth();
+
     m_player = new Tunnelman(this);
 
-    // Calculate the number of Boulders, Gold Nuggets, and Barrels of Oil
     const int level = getLevel();
-    const int numBoulders = std::min(level / 2 + 2, 9);
-    const int numGoldNuggets = std::max(level / 2, 2);
-    const int numBarrels = std::min(2 + level, 21);
-
-    // Add actors to the game world based on the calculated numbers
-    addBoulderorGoldorBarrel(numBoulders, 'B');
-    addBoulderorGoldorBarrel(numBarrels, 'L');
-    addBoulderorGoldorBarrel(numGoldNuggets, 'G');
+    addGameObjects('B', std::min(level / 2 + 2, 9));
+    addGameObjects('L', std::min(2 + level, 21));
+    addGameObjects('G', std::max(level / 2, 2));
 
     return GWSTATUS_CONTINUE_GAME;
 }
@@ -479,7 +430,7 @@ int StudentWorld::init()
 int StudentWorld::move()
 {
     
-    updateDisplayText();
+    setDisplayText();
 
     
     for (size_t i = 0; i < m_actors.size(); i++)
@@ -494,7 +445,7 @@ int StudentWorld::move()
                 return GWSTATUS_PLAYER_DIED;
             }
 
-            if (iscompleted)
+            if (m_isCompleted)
             {
                 return GWSTATUS_FINISHED_LEVEL;
             }
@@ -503,7 +454,6 @@ int StudentWorld::move()
 
     m_player->doSomething();
 
-    
     addGoodies();
     addProtesters();
 
@@ -523,23 +473,16 @@ int StudentWorld::move()
     return GWSTATUS_CONTINUE_GAME;
 }
 
-
 void StudentWorld::cleanUp()
 {
-    // Cleanup Earth objects
-    int x = 0;
-    while (x < 64)
+    
+    for (int x = 0; x < 64; ++x)
     {
-        int y = 0;
-        while (y < 60)
+        for (int y = 0; y < 60; ++y)
         {
-            delete m_earth[x][y]; 
-            m_earth[x][y] = nullptr; 
-            y++;
+            removeEarthAt(x, y, false);
         }
-        x++;
     }
-
     
     while (!m_actors.empty())
     {
@@ -547,7 +490,6 @@ void StudentWorld::cleanUp()
         m_actors.pop_back(); 
     }
 
-    
     delete m_player;
     m_player = nullptr; 
 }

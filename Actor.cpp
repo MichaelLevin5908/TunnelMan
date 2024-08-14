@@ -306,7 +306,7 @@ void Boulder::doSomething()
 
     if (isStable) 
     {
-        if (getWorld()->isAboveEarth(getX(), getY() - 1)) 
+        if (getWorld()->isEarthPresent(getX(), getY() - 1, true)) 
         {
             return;
         } 
@@ -326,7 +326,7 @@ void Boulder::doSomething()
 
     if (isFalling) 
     {
-        if (getWorld()->isAboveEarth(getX(), getY() - 1) || 
+        if (getWorld()->isEarthPresent(getX(), getY() - 1, true) || 
             getWorld()->isThereBoulder(getX(), getY() - 4, 0) || 
             getY() == 0) 
         {
@@ -340,6 +340,7 @@ void Boulder::doSomething()
         annoyMan();
     }
 }
+
 
 
 void Boulder::annoyMan()
