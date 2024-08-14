@@ -51,7 +51,6 @@ public:
     Protester* protesterInRadius(Actor* actor, int radius);
     void moveToExit(Protester* pr);
     GraphObject::Direction senseSignalFromPlayer(Protester* pr, int M);
-
     
     void initializeMaze();  
     void addEarth();  
@@ -69,10 +68,10 @@ private:
     std::vector<Actor*> m_actors;
     int m_maze[64][64];
 
-    struct Grid {
-        int x;
-        int y;
-        Grid(int a, int b) : x(a), y(b) {}
+    struct grid {
+        int m_x;
+        int m_y;
+        grid(int x, int y) : m_x(x), m_y(y) {}
     };
 };
 

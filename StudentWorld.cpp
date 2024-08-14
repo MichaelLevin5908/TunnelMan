@@ -327,8 +327,6 @@ void StudentWorld::performBFS(int startX, int startY)
     }
 }
 
-
-
 bool StudentWorld::isPlayerInRadius(Actor* actor, int radius)
 {
     return withInRadius(actor->getX(), actor->getY(), m_player->getX(), m_player->getY(), radius);
@@ -351,7 +349,6 @@ Protester* StudentWorld::protesterInRadius(Actor* actor, int radius)
     }
     return nullptr;
 }
-
 
 void StudentWorld::moveToExit(Protester* pr)
 {
