@@ -493,22 +493,20 @@ GraphObject::Direction Protester::directionToPlayer()
     int playerX = getWorld()->getPlayer()->getX();
     int playerY = getWorld()->getPlayer()->getY();
 
-    if (getX() == playerX && getY() == playerY)
+    int protesterX = getX();
+    int protesterY = getY();
+
+    if (protesterX == playerX)
     {
-        return getDirection(); 
+        return (protesterY < playerY) ? up : down;
+    }
+    
+    if (protesterY == playerY)
+    {
+        return (protesterX > playerX) ? left : right;
     }
 
-    if (getX() == playerX) 
-    {
-        return (getY() < playerY) ? up : down;
-    }
-
-    if (getY() == playerY) 
-    {
-        return (getX() > playerX) ? left : right;
-    }
-
-    return none; 
+    return none;
 }
 
 bool Protester::straightPathToPlayer(Direction direction)
