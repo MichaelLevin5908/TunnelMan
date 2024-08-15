@@ -224,6 +224,19 @@ void StudentWorld::addBoulderorGoldorBarrel(int num, char actor)
     }
 }
 
+bool StudentWorld::canMoveTo(int x, int y){
+    if (x < 0 || x > VIEW_WIDTH - 1 || y < 0 || y > VIEW_HEIGHT - 1)
+        return false;
+
+    if (isThereBoulder(x, y))
+        return false;
+
+    if (isThereEarth(x, y))
+        return false;
+
+    return true;
+}
+
 bool StudentWorld::isEarthPresent(int x, int y, bool checkOnlyAbove = false)
 {
     for (int i = x; i < x + 4; i++)

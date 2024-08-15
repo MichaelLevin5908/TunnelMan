@@ -50,6 +50,7 @@ public:
     virtual void doSomething();
     void shoot();
     virtual void isAnnoyed(int hp);
+    void handleMovement(int ch);
     virtual void moveInDirection(Direction direction);
 
 private:
@@ -86,6 +87,7 @@ public:
     bool annoyProtesters();
 
 private:
+    bool moveInDirectionOrDie(Direction dir);
     int m_travel;
 };
 
@@ -141,11 +143,11 @@ class Protester : public Man
 public:
     Protester(StudentWorld* world, int imageID, int hp);
     virtual void doSomething();
-    virtual void getBribed();
+    virtual void isBribed();
     void moveInDirection(Direction direction);
     void randomNumToMove();
     virtual void isAnnoyed(int hp);
-    void getStunned();
+    void isStunned();
     bool isFacingPlayer();
     Direction directionToPlayer();
     bool straightPathToPlayer(Direction direction);
@@ -154,6 +156,7 @@ public:
     void pickViableDirectionToTurn();
 
 private:
+    void setOppositeDirection();
     bool m_leave;
     int m_numToMove;
     int m_tickSinceLastTurn;

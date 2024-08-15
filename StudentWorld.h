@@ -31,6 +31,7 @@ public:
     void setDisplayText();
     std::string displayText(int score, int level, int lives, int health, int squirts, int gold, int sonar, int barrels);
     void detectNearActors(int x, int y, int radius);
+    bool canMoveTo(int x, int y);
     bool digEarth(int x, int y); 
     void removeEarthAt(int i, int j, bool* cleared);
     void addActor(Actor* actor);
