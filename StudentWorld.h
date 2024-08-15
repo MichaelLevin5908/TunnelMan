@@ -77,5 +77,3 @@ private:
 };
 
 #endif // STUDENTWORLD_H_
-
-

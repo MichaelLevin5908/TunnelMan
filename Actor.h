@@ -178,4 +178,3 @@ public:
 };
 
 #endif // ACTOR_H_
-
