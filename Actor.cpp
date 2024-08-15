@@ -250,12 +250,10 @@ void Boulder::doSomething()
 
 void Boulder::annoyMan()
 {
-    // Check if the player is within radius and annoy them if so
     if (getWorld()->isPlayerInRadius(this, 3)) {
         getWorld()->getPlayer()->isAnnoyed(100);
     }
     
-    // Check if any protester is within radius and annoy them if so
     if (Protester* p = getWorld()->protesterInRadius(this, 3)) {
         p->isAnnoyed(100);
     }
