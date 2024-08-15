@@ -45,7 +45,7 @@ public:
     bool isAboveEarth(int x, int y);
     bool isThereEarth(int x, int y);
     bool isEarthPresent(int x, int y, bool checkOnlyAbove);
-    void isCompleted();
+    bool isCompleted() const;
     bool isThereBoulder(int x, int y, int radius = 3);
     bool canMoveInDirection(int x, int y, GraphObject::Direction direction);
     bool isPlayerInRadius(Actor* actor, int radius);
@@ -59,7 +59,6 @@ public:
     void performBFS(int startX, int startY);  
 
 private:
-    bool m_isCompleted;
     bool m_isFirstTick;
     int m_tickSinceLast;
     int m_protestersAlive;

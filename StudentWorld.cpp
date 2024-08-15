@@ -13,7 +13,7 @@ GameWorld* createStudentWorld(string assetDir)
     return new StudentWorld(assetDir);
 }
 
-StudentWorld::StudentWorld(std::string assetDir): GameWorld(assetDir), m_isFirstTick(true), m_tickSinceLast(0), m_protestersAlive(0), m_player(nullptr), m_barrelsLeft(0), m_isCompleted(false) {}
+StudentWorld::StudentWorld(std::string assetDir): GameWorld(assetDir), m_isFirstTick(true), m_tickSinceLast(0), m_protestersAlive(0), m_player(nullptr), m_barrelsLeft(0) {}
 
 StudentWorld::~StudentWorld()
 {
@@ -154,18 +154,14 @@ void StudentWorld::addProtesters()
     m_tickSinceLast++;
 }
 
-void StudentWorld::isCompleted()
+bool StudentWorld::isCompleted() const
 {
-    if (m_barrelsLeft == 0)
-    {
-        m_isCompleted = true;
-    }
+    return m_barrelsLeft == 0;
 }
 
 void StudentWorld::decBarrel()
 {
     m_barrelsLeft--;
-    isCompleted();
 }
 
 void StudentWorld::decProtester()
@@ -423,7 +419,6 @@ int StudentWorld::init()
     m_isFirstTick = true;
     m_tickSinceLast = 0;
     m_protestersAlive = 0;
-    m_isCompleted = false;
 
     addEarth();
 
@@ -455,7 +450,7 @@ int StudentWorld::move()
                 return GWSTATUS_PLAYER_DIED;
             }
 
-            if (m_isCompleted)
+            if (isCompleted)
             {
                 return GWSTATUS_FINISHED_LEVEL;
             }
