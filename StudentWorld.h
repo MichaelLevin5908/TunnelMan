@@ -45,7 +45,7 @@ public:
     bool isAboveEarth(int x, int y);
     bool isThereEarth(int x, int y);
     bool isEarthPresent(int x, int y, bool checkOnlyAbove);
-    bool isCompleted();
+    void isCompleted();
     bool isThereBoulder(int x, int y, int radius = 3);
     bool canMoveInDirection(int x, int y, GraphObject::Direction direction);
     bool isPlayerInRadius(Actor* actor, int radius);

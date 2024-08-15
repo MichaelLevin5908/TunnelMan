@@ -154,7 +154,7 @@ void StudentWorld::addProtesters()
     m_tickSinceLast++;
 }
 
-bool StudentWorld::isCompleted()
+void StudentWorld::isCompleted()
 {
     if (m_barrelsLeft == 0)
     {
@@ -490,7 +490,7 @@ void StudentWorld::cleanUp()
     {
         for (int y = 0; y < 60; ++y)
         {
-            removeEarthAt(x, y, false);
+            removeEarthAt(x, y, nullptr);
         }
     }
     
