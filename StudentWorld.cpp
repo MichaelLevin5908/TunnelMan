@@ -450,7 +450,7 @@ int StudentWorld::move()
                 return GWSTATUS_PLAYER_DIED;
             }
 
-            if (isCompleted)
+            if (isCompleted())
             {
                 return GWSTATUS_FINISHED_LEVEL;
             }
