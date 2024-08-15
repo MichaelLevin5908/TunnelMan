@@ -14,9 +14,9 @@ class Actor : public GraphObject
 public:
     Actor(StudentWorld* world, int imageID, int startX, int startY, Direction dir, double size, unsigned int depth);
     virtual ~Actor();
-    StudentWorld* getWorld();
-    bool isAlive();
-    void die();
+    inline StudentWorld* getWorld() { return m_world; }
+    inline bool isAlive() const { return m_alive; }
+    inline void die() { m_alive = false; }
     void moveTo(int x, int y);
     virtual void doSomething() = 0;
     virtual void isAnnoyed(int hp) {}
@@ -30,8 +30,8 @@ class Man : public Actor
 {
 public:
     Man(StudentWorld* world, int imageID, int startX, int startY, Direction dir, int hp);
-    int gethp() const;
-    void dechp(int hp_points);
+    inline int gethp() const { return m_hp; }
+    inline void dechp(int hp_points) { m_hp -= hp_points; }
     virtual void moveInDirection(Direction direction) = 0;
     virtual void isAnnoyed(int hp) = 0;
 
@@ -44,9 +44,9 @@ class Tunnelman : public Man
 public:
     Tunnelman(StudentWorld* world);
     void add(int id);
-    int getWtr() const;
-    int getSonar() const;
-    int getGld() const;
+    inline int getWtr() const { return m_wtr; }
+    inline int getSonar() const { return m_sonar; }
+    inline int getGld() const { return m_gld; }
     virtual void doSomething();
     void shoot();
     virtual void isAnnoyed(int hp);

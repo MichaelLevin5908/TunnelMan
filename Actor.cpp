@@ -14,18 +14,6 @@ Actor::~Actor()
 	{
 		setVisible(false);
 	}
-StudentWorld* Actor::getWorld()
-	{
-		return m_world;
-	}
-bool Actor::isAlive()
- 	{
-		return m_alive;
-	}
-void Actor::die() 
-	{
-		m_alive = false;
-	}
 
 void Actor::moveTo(int x, int y)
 {
@@ -36,16 +24,6 @@ void Actor::moveTo(int x, int y)
 }
 
 Man::Man(StudentWorld* world, int imageID, int startX, int startY, Direction dir, int hp):Actor(world, imageID, startX, startY, dir, 1.0, 0), m_hp(hp) {}
-
-int Man::gethp() const
-	{
-		return m_hp;
-	}
-
-void Man::dechp(int hp_points)
-	{
-		m_hp -= hp_points;
-	}
 
 Tunnelman::Tunnelman(StudentWorld* world):Man(world, TID_PLAYER, 30, 60, right, 10), m_wtr(5), m_sonar(1), m_gld(0) {}
 
@@ -183,21 +161,6 @@ void Tunnelman::moveInDirection(Direction direction)
         setDirection(direction);
     }
 }
-
-int Tunnelman::getWtr() const
-	{
-		return m_wtr;
-	}
-
-int Tunnelman::getSonar() const
-	{
-		return m_sonar;
-	}
-
-int Tunnelman::getGld() const
-	{
-		return m_gld;
-	}
 
 Earth::Earth(StudentWorld* world, int startX, int startY):Actor(world, TID_EARTH, startX, startY, right, 0.25, 3) {}
 
