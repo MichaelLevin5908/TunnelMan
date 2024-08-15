@@ -50,7 +50,6 @@ public:
     virtual void doSomething();
     void shoot();
     virtual void isAnnoyed(int hp);
-    void handleMovement(int ch);
     virtual void moveInDirection(Direction direction);
 
 private:
@@ -168,7 +167,6 @@ class RegularProtester : public Protester
 {
 public:
     RegularProtester(StudentWorld* world);
-    virtual void doSomething();
 };
 
 class HardcoreProtester : public Protester

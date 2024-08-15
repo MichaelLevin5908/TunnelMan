@@ -30,7 +30,6 @@ public:
     Tunnelman* getPlayer() const;
     void setDisplayText();
     std::string displayText(int score, int level, int lives, int health, int squirts, int gold, int sonar, int barrels);
-    void detectNearActors(int x, int y, int radius);
     bool canMoveTo(int x, int y);
     bool digEarth(int x, int y); 
     void removeEarthAt(int i, int j, bool* cleared);
@@ -51,7 +50,6 @@ public:
     bool isPlayerInRadius(Actor* actor, int radius);
     Protester* protesterInRadius(Actor* actor, int radius);
     void moveToExit(Protester* pr);
-    GraphObject::Direction senseSignalFromPlayer(Protester* pr, int M);
     
     void initializeMaze();  
     void addEarth();  

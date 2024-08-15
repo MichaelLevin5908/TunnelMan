@@ -18,7 +18,7 @@ Actor::~Actor()
 void Actor::moveTo(int x, int y)
 {
     if (x >= 0 && x <= 60 && y >= 0 && y <= 60)
-    {
+    {   
         GraphObject::moveTo(x, y);
     }
 }
@@ -43,18 +43,8 @@ void Tunnelman::add(int id)
     }
 }
 
-void Tunnelman::handleMovement(int ch) {
-    switch (ch) {
-        case KEY_PRESS_LEFT:
-        case KEY_PRESS_RIGHT:
-        case KEY_PRESS_UP:
-        case KEY_PRESS_DOWN:
-            moveInDirection(static_cast<Direction>(ch));
-            break;
-    }
-}
-
-void Tunnelman::doSomething() {
+void Tunnelman::doSomething()
+{
     if (!isAlive()) 
         return;
 
@@ -67,10 +57,20 @@ void Tunnelman::doSomething() {
 
     if (ch == KEY_PRESS_ESCAPE) {
         die();
-    } 
-    else {
-        handleMovement(ch);
+    } else {
         switch (ch) {
+            case KEY_PRESS_LEFT:
+                moveInDirection(left);
+                break;
+            case KEY_PRESS_RIGHT:
+                moveInDirection(right);
+                break;
+            case KEY_PRESS_UP:
+                moveInDirection(up);
+                break;
+            case KEY_PRESS_DOWN:
+                moveInDirection(down);
+                break;
             case KEY_PRESS_SPACE:
                 if (m_wtr > 0) {
                     m_wtr--;
@@ -81,7 +81,7 @@ void Tunnelman::doSomething() {
             case 'Z':
                 if (m_sonar > 0) {
                     m_sonar--;
-                    getWorld()->detectNearActors(getX(), getY(), 12);
+                    getWorld()->ActorsWithInRadius(getX(), getY(), 12);
                     getWorld()->playSound(SOUND_SONAR);
                 }
                 break;
@@ -149,12 +149,9 @@ void Tunnelman::moveInDirection(Direction direction)
         default:    return;
     }
 
-    if (getDirection() == direction)
+    if (getWorld()->canMoveTo(newX, newY))
     {
-        if (getWorld()->canMoveTo(newX, newY))
-        {
-            moveTo(newX, newY);
-        }
+        moveTo(newX, newY);
     }
     else
     {
@@ -412,15 +409,14 @@ void Protester::doSomething()
     }
 
     if (getID() == TID_HARD_CORE_PROTESTER)
-    {
-        int M = 16 + static_cast<int>(getWorld()->getLevel());
-        Direction s = getWorld()->senseSignalFromPlayer(this, M);
-        if (s != none)
         {
-            moveInDirection(s);
-            return;
+            GraphObject::Direction s = directionToPlayer();
+            if (s != GraphObject::none)
+            {
+                moveInDirection(s);
+                return;
+            }
         }
-    }
 
     Direction d = directionToPlayer();
     if (d != none && straightPathToPlayer(d) && !getWorld()->isPlayerInRadius(this, 4))
