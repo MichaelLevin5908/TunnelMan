@@ -162,7 +162,6 @@ void Tunnelman::moveInDirection(Direction direction)
     }
 }
 
-
 Earth::Earth(StudentWorld* world, int startX, int startY):Actor(world, TID_EARTH, startX, startY, right, 0.25, 3) {}
 
 void Earth::doSomething() {} 
