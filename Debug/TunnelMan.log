@@ -1,7 +1,5 @@
 ﻿  Actor.cpp
-  GameController.cpp
-  GameWorld.cpp
-  main.cpp
   StudentWorld.cpp
+C:\Users\Michael\Desktop\CS32\cs_project4\tunnelman\TunnelMan-skeleton-windows\TunnelMan\TunnelMan\StudentWorld.cpp(136,11): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
   Generating Code...
-  TunnelMan.vcxproj -> C:\Users\sport\Documents\UCLA\CS32\Projects\4\TunnelMan-skeleton-windows\TunnelMan\Debug\TunnelMan.exe
+  TunnelMan.vcxproj -> C:\Users\Michael\Desktop\CS32\cs_project4\tunnelman\TunnelMan-skeleton-windows\TunnelMan\Debug\TunnelMan.exe

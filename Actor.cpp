@@ -137,30 +137,36 @@ void Tunnelman::isAnnoyed(int hp)
 
 void Tunnelman::moveInDirection(Direction direction)
 {
-    if (getDirection() == direction)
+    int newX = getX();
+    int newY = getY();
+
+    switch (direction)
     {
-        int newX = getX();
-        int newY = getY();
+        case left:  newX--; break;
+        case right: newX++; break;
+        case up:    newY++; break;
+        case down:  newY--; break;
+        default:    return;
+    }
 
-        switch (direction)
-        {
-            case left:  newX--; break;
-            case right: newX++; break;
-            case up:    newY++; break;
-            case down:  newY--; break;
-            default:    return;
-        }
+    if (getWorld()->isThereEarth(newX, newY))
+    {
+        getWorld()->digEarth(newX, newY);
+    }
 
-        if (getWorld()->canMoveTo(newX, newY))
-        {
-            moveTo(newX, newY);
-        }
+    if (getWorld()->canMoveTo(newX, newY))
+    {
+        moveTo(newX, newY);
     }
     else
     {
-        setDirection(direction);
+        if (getDirection() != direction)
+        {
+            setDirection(direction);
+        }
     }
 }
+
 
 Earth::Earth(StudentWorld* world, int startX, int startY):Actor(world, TID_EARTH, startX, startY, right, 0.25, 3) {}
 

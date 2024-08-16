@@ -57,16 +57,18 @@ string StudentWorld::displayText(int level, int lives, int health, int squirts, 
     return s.str();
 }
 
-
-void StudentWorld::removeEarthAt(int i, int j, bool* cleared = nullptr)
+void StudentWorld::removeEarthAt(int x, int y, bool* cleared)
 {
-    if (m_earth[i][j] != nullptr)
+    if (x >= 0 && x < 64 && y >= 0 && y < 60)
     {
-        delete m_earth[i][j];
-        m_earth[i][j] = nullptr;
-        if (cleared)
+        if (m_earth[x][y] != nullptr)
         {
-            *cleared = true;
+            delete m_earth[x][y];
+            m_earth[x][y] = nullptr;
+            if (cleared != nullptr)
+            {
+                *cleared = true;
+            }
         }
     }
 }
@@ -480,7 +482,6 @@ int StudentWorld::move()
 
 void StudentWorld::cleanUp()
 {
-    
     for (int x = 0; x < 64; ++x)
     {
         for (int y = 0; y < 60; ++y)
@@ -488,13 +489,16 @@ void StudentWorld::cleanUp()
             removeEarthAt(x, y, nullptr);
         }
     }
-    
-    while (!m_actors.empty())
-    {
-        delete m_actors.back();
-        m_actors.pop_back(); 
-    }
 
-    delete m_player;
-    m_player = nullptr; 
+    for (auto* actor : m_actors)
+    {
+        delete actor; 
+    }
+    m_actors.clear();  
+
+    if (m_player != nullptr)
+    {
+        delete m_player;
+        m_player = nullptr;
+    }
 }
