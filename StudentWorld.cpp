@@ -288,13 +288,13 @@ bool StudentWorld::canMoveInDirection(int x, int y, GraphObject::Direction direc
     switch (direction)
     {
         case GraphObject::left:
-            return (x != 0 && !isThereEarth(x - 1, y) && !isThereBoulder(x - 1, y));
+            return (x > 0 && !isThereEarth(x - 1, y) && !isThereBoulder(x - 1, y));
         case GraphObject::right:
-            return (x != 60 && !isThereEarth(x + 1, y) && !isThereBoulder(x + 1, y));
+            return (x < 60 && !isThereEarth(x + 1, y) && !isThereBoulder(x + 1, y));
         case GraphObject::up:
-            return (y != 60 && !isThereEarth(x, y + 1) && !isThereBoulder(x, y + 1));
+            return (y < 60 && !isThereEarth(x, y + 1) && !isThereBoulder(x, y + 1));
         case GraphObject::down:
-            return (y != 0 && !isThereEarth(x, y - 1) && !isThereBoulder(x, y - 1));
+            return (y > 0 && !isThereEarth(x, y - 1) && !isThereBoulder(x, y - 1));
         case GraphObject::none:
         default:
             return false;
