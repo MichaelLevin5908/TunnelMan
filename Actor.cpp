@@ -137,6 +137,12 @@ void Tunnelman::isAnnoyed(int hp)
 
 void Tunnelman::moveInDirection(Direction direction)
 {
+    if (getDirection() != direction)
+    {
+        setDirection(direction);
+        return;  
+    }
+
     int newX = getX();
     int newY = getY();
 
@@ -149,24 +155,16 @@ void Tunnelman::moveInDirection(Direction direction)
         default:    return;
     }
 
-    if (getWorld()->isThereEarth(newX, newY))
+    if (getWorld()->digEarth(newX, newY))
     {
-        getWorld()->digEarth(newX, newY);
+        getWorld()->playSound(SOUND_DIG);
     }
 
     if (getWorld()->canMoveTo(newX, newY))
     {
         moveTo(newX, newY);
     }
-    else
-    {
-        if (getDirection() != direction)
-        {
-            setDirection(direction);
-        }
-    }
 }
-
 
 Earth::Earth(StudentWorld* world, int startX, int startY):Actor(world, TID_EARTH, startX, startY, right, 0.25, 3) {}
 
