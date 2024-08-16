@@ -283,7 +283,6 @@ bool StudentWorld::isThereBoulder(int x, int y, int radius)
     return false;
 }
 
-
 bool StudentWorld::canMoveInDirection(int x, int y, GraphObject::Direction direction)
 {
     switch (direction)
