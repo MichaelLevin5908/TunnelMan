@@ -60,15 +60,19 @@ void Tunnelman::doSomething()
     } else {
         switch (ch) {
             case KEY_PRESS_LEFT:
+                setDirection(left);
                 moveInDirection(left);
                 break;
             case KEY_PRESS_RIGHT:
+                setDirection(right);
                 moveInDirection(right);
                 break;
             case KEY_PRESS_UP:
+                setDirection(up);
                 moveInDirection(up);
                 break;
             case KEY_PRESS_DOWN:
+                setDirection(down);
                 moveInDirection(down);
                 break;
             case KEY_PRESS_SPACE:
