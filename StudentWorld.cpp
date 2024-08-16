@@ -260,11 +260,6 @@ bool StudentWorld::isEarthPresent(int x, int y, bool checkOnlyAbove = false)
     return false;
 }
 
-bool StudentWorld::isAboveEarth(int x, int y)
-{
-    return isEarthPresent(x, y, true);
-}
-
 bool StudentWorld::isThereEarth(int x, int y)
 {
     return isEarthPresent(x, y, false);

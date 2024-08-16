@@ -41,7 +41,6 @@ public:
     bool withInRadius(int x1, int y1, int x2, int y2, int radius); 
     bool ActorsWithInRadius(int x, int y, int radius);  
     void addBoulderorGoldorBarrel(int num, char actor);
-    bool isAboveEarth(int x, int y);
     bool isThereEarth(int x, int y);
     bool isEarthPresent(int x, int y, bool checkOnlyAbove);
     bool isCompleted() const;
