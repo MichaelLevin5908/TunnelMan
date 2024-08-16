@@ -420,6 +420,7 @@ void Protester::doSomething()
             GraphObject::Direction s = directionToPlayer();
             if (s != GraphObject::none)
             {
+                setDirection(s);
                 moveInDirection(s);
                 return;
             }
