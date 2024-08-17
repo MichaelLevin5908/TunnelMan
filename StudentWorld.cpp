@@ -13,7 +13,7 @@ GameWorld* createStudentWorld(string assetDir)
     return new StudentWorld(assetDir);
 }
 
-StudentWorld::StudentWorld(std::string assetDir): GameWorld(assetDir), m_isFirstTick(true), m_tickSinceLast(0), m_protestersAlive(0), m_player(nullptr), m_barrelsLeft(0) {}
+StudentWorld::StudentWorld(std::string assetDir): GameWorld(assetDir), m_isFirstFrame(true), m_ticksSinceLast(0), m_numActiveProtesters(0), m_player(nullptr), m_numBarrelsLeft(0) {}
 
 StudentWorld::~StudentWorld()
 {
@@ -32,7 +32,7 @@ void StudentWorld::setDisplayText()
     int health = m_player->gethp();
     int squirts = m_player->getWtr();
     int gold = m_player->getGld();
-    int barrelsLeft = m_barrelsLeft;
+    int barrelsLeft = m_numBarrelsLeft;
     int sonar = m_player->getSonar();
     int score = getScore();
 
@@ -136,7 +136,7 @@ void StudentWorld::addProtesters()
     int P = fmin(15, 2 + getLevel() * 1.5);
     int probabilityOfHardcore = min(90, (int)getLevel() * 10 + 30);
 
-    if (m_isFirstTick || (m_tickSinceLast > T && m_protestersAlive < P))
+    if (m_isFirstFrame || (m_ticksSinceLast > T && m_numActiveProtesters < P))
     {
         Actor* protester;
         if (rand() % 100 < probabilityOfHardcore)
@@ -149,26 +149,26 @@ void StudentWorld::addProtesters()
         }
         
         addActor(protester);
-        m_tickSinceLast = 0;
-        m_protestersAlive++;
-        m_isFirstTick = false;
+        m_ticksSinceLast = 0;
+        m_numActiveProtesters++;
+        m_isFirstFrame = false;
     }
-    m_tickSinceLast++;
+    m_ticksSinceLast++;
 }
 
 bool StudentWorld::isCompleted() const
 {
-    return m_barrelsLeft == 0;
+    return m_numBarrelsLeft == 0;
 }
 
 void StudentWorld::decBarrel()
 {
-    m_barrelsLeft--;
+    m_numBarrelsLeft--;
 }
 
 void StudentWorld::decProtester()
 {
-    m_protestersAlive--;
+    m_numActiveProtesters--;
 }
 
 bool StudentWorld::withInRadius(int x1, int y1, int x2, int y2, int radius)
@@ -214,7 +214,7 @@ void StudentWorld::addBoulderorGoldorBarrel(int num, char actor)
                 break;
             case 'L':
                 addActor(new Barrel(this, x, y));
-                m_barrelsLeft++;
+                m_numBarrelsLeft++;
                 break;
             default:
                 break;
@@ -411,10 +411,10 @@ void StudentWorld::addGameObjects(char objectType, int numObjects)
 
 int StudentWorld::init()
 {
-    m_barrelsLeft = 0;
-    m_isFirstTick = true;
-    m_tickSinceLast = 0;
-    m_protestersAlive = 0;
+    m_numBarrelsLeft = 0;
+    m_isFirstFrame = true;
+    m_ticksSinceLast = 0;
+    m_numActiveProtesters = 0;
 
     addEarth();
 

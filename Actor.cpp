@@ -25,13 +25,13 @@ void Actor::moveTo(int x, int y)
 
 Man::Man(StudentWorld* world, int imageID, int startX, int startY, Direction dir, int hp):Actor(world, imageID, startX, startY, dir, 1.0, 0), m_hp(hp) {}
 
-Tunnelman::Tunnelman(StudentWorld* world):Man(world, TID_PLAYER, 30, 60, right, 10), m_wtr(5), m_sonar(1), m_gld(0) {}
+Tunnelman::Tunnelman(StudentWorld* world):Man(world, TID_PLAYER, 30, 60, right, 10), m_waterAmmo(5), m_sonar(1), m_gold(0) {}
 
 void Tunnelman::add(int id)
 {
     if (id == TID_WATER_POOL) 
     {
-        m_wtr += 5;
+        m_waterAmmo += 5;
     }
     else if (id == TID_SONAR) 
     {
@@ -39,7 +39,7 @@ void Tunnelman::add(int id)
     }
     else if (id == TID_GOLD) 
     {
-        m_gld++;
+        m_gold++;
     }
 }
 
@@ -76,8 +76,8 @@ void Tunnelman::doSomething()
                 moveInDirection(down);
                 break;
             case KEY_PRESS_SPACE:
-                if (m_wtr > 0) {
-                    m_wtr--;
+                if (m_waterAmmo > 0) {
+                    m_waterAmmo--;
                     shoot();
                 }
                 break;
@@ -90,9 +90,9 @@ void Tunnelman::doSomething()
                 }
                 break;
             case KEY_PRESS_TAB:
-                if (m_gld > 0) {
+                if (m_gold > 0) {
                     getWorld()->addActor(new Gold(getWorld(), getX(), getY(), true, true));
-                    m_gld--;
+                    m_gold--;
                 }
                 break;
         }
@@ -369,15 +369,15 @@ Sonar::Sonar(StudentWorld* world, int startX, int startY):Goodie(world, TID_SONA
 WaterPool::WaterPool(StudentWorld* world, int startX, int startY):Goodie(world, TID_WATER_POOL, startX, startY) {}
 
 //Protester
-Protester::Protester(StudentWorld* world, int imageID, int hp): Man(world, imageID, 60, 60, left, hp), m_leave(false), m_tickSinceLastTurn(200), m_tickNoYell(15)
+Protester::Protester(StudentWorld* world, int imageID, int hp): Man(world, imageID, 60, 60, left, hp), m_isLeaving(false), m_ticksSinceLastTurn(200), m_yellCooldown(15)
 	{
 		randomNumToMove();
-		m_tickRest = max(0, 3 - (int)getWorld()->getLevel() / 4);
+		m_ticksUntilActive = max(0, 3 - (int)getWorld()->getLevel() / 4);
 	}
 
 void Protester::randomNumToMove()
 	{
-		m_numToMove = rand() % 53 + 8;
+		m_remainingSteps = rand() % 53 + 8;
 	}
 
 void Protester::doSomething()
@@ -387,17 +387,17 @@ void Protester::doSomething()
         return;
     }
 
-    if (m_tickRest > 0)
+    if (m_ticksUntilActive > 0)
     {
-        m_tickRest--;
+        m_ticksUntilActive--;
         return;
     }
 
-    m_tickRest = std::max(0, 3 - static_cast<int>(getWorld()->getLevel()) / 4);
-    m_tickSinceLastTurn++;
-    m_tickNoYell++;
+    m_ticksUntilActive = std::max(0, 3 - static_cast<int>(getWorld()->getLevel()) / 4);
+    m_ticksSinceLastTurn++;
+    m_yellCooldown++;
 
-    if (m_leave)
+    if (m_isLeaving)
     {
         if (getX() == 60 && getY() == 60)
         {
@@ -411,11 +411,11 @@ void Protester::doSomething()
         return;
     }
 
-    if (getWorld()->isPlayerInRadius(this, 4) && isFacingPlayer() && m_tickNoYell > 15)
+    if (getWorld()->isPlayerInRadius(this, 4) && isFacingPlayer() && m_yellCooldown > 15)
     {
         getWorld()->getPlayer()->isAnnoyed(2);
         getWorld()->playSound(SOUND_PROTESTER_YELL);
-        m_tickNoYell = 0;
+        m_yellCooldown = 0;
         return;
     }
 
@@ -435,12 +435,12 @@ void Protester::doSomething()
     {
         setDirection(d);
         moveInDirection(d);
-        m_numToMove = 0;
+        m_remainingSteps = 0;
         return;
     }
 
-    m_numToMove--;
-    if (m_numToMove <= 0)
+    m_remainingSteps--;
+    if (m_remainingSteps <= 0)
     {
         Direction newDir;
         do
@@ -452,10 +452,10 @@ void Protester::doSomething()
         randomNumToMove();
     }
 
-    else if (isAtIntersection() && m_tickSinceLastTurn > 200)
+    else if (isAtIntersection() && m_ticksSinceLastTurn > 200)
     {
         pickViableDirectionToTurn();
-        m_tickSinceLastTurn = 0;
+        m_ticksSinceLastTurn = 0;
         randomNumToMove();
     }
 
@@ -463,7 +463,7 @@ void Protester::doSomething()
 
     if (!getWorld()->canMoveInDirection(getX(), getY(), getDirection()))
     {
-        m_numToMove = 0;
+        m_remainingSteps = 0;
     }
 }
 
@@ -586,7 +586,7 @@ void Protester::pickViableDirectionToTurn()
 
 void Protester::isAnnoyed(int hp)
 {
-    if (m_leave) 
+    if (m_isLeaving) 
         return;
 
     dechp(hp);
@@ -597,8 +597,8 @@ void Protester::isAnnoyed(int hp)
         return;
 
     getWorld()->playSound(SOUND_PROTESTER_GIVE_UP);
-    m_leave = true;
-    m_tickRest = 0;
+    m_isLeaving = true;
+    m_ticksUntilActive = 0;
 
     int score = (hp == 100) ? 500 : (getID() == TID_PROTESTER) ? 100 : 250;
     getWorld()->increaseScore(score);
@@ -606,7 +606,7 @@ void Protester::isAnnoyed(int hp)
 
 void Protester::isStunned()
 {
-	m_tickRest = max(50, 100 - (int)getWorld()->getLevel()*10);
+	m_ticksUntilActive = max(50, 100 - (int)getWorld()->getLevel()*10);
 }
 
 void Protester::isBribed()
@@ -617,11 +617,11 @@ void Protester::isBribed()
 
     if (getID() == TID_PROTESTER)
     {
-        m_leave = true;
+        m_isLeaving = true;
     }
     else
     {
-        m_tickRest = max(50, 100 - int(getWorld()->getLevel()) * 10);
+        m_ticksUntilActive = max(50, 100 - int(getWorld()->getLevel()) * 10);
     }
 }
 

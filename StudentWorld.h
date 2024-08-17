@@ -56,10 +56,10 @@ public:
     void performBFS(int startX, int startY);  
 
 private:
-    bool m_isFirstTick;
-    int m_tickSinceLast;
-    int m_protestersAlive;
-    int m_barrelsLeft;
+    bool m_isFirstFrame;
+    int m_ticksSinceLast;
+    int m_numActiveProtesters;
+    int m_numBarrelsLeft;
     Earth* m_earth[64][64];
     Tunnelman* m_player;
     std::vector<Actor*> m_actors;

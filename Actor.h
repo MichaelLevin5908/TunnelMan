@@ -44,18 +44,18 @@ class Tunnelman : public Man
 public:
     Tunnelman(StudentWorld* world);
     void add(int id);
-    inline int getWtr() const { return m_wtr; }
+    inline int getWaterAmmo() const { return m_waterAmmo; }
     inline int getSonar() const { return m_sonar; }
-    inline int getGld() const { return m_gld; }
+    inline int getGold() const { return m_gold; }
     virtual void doSomething();
     void shoot();
     virtual void isAnnoyed(int hp);
     virtual void moveInDirection(Direction direction);
 
 private:
-    int m_wtr;
+    int m_waterAmmo;
     int m_sonar;
-    int m_gld;
+    int m_gold;
 };
 
 class Earth : public Actor
@@ -156,11 +156,11 @@ public:
 
 private:
     void setOppositeDirection();
-    bool m_leave;
-    int m_numToMove;
-    int m_tickSinceLastTurn;
-    int m_tickNoYell;
-    int m_tickRest;
+    bool m_isLeaving;
+    int m_remainingSteps;
+    int m_ticksSinceLastTurn;
+    int m_yellCooldown;
+    int m_ticksUntilActive;
 };
 
 class RegularProtester : public Protester
