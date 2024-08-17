@@ -602,6 +602,8 @@ void Protester::isAnnoyed(int hp)
 
     int score = (hp == 100) ? 500 : (getID() == TID_PROTESTER) ? 100 : 250;
     getWorld()->increaseScore(score);
+
+    die();
 }
 
 void Protester::isStunned()
