@@ -19,7 +19,7 @@ public:
     inline void die() { m_alive = false; }
     void moveTo(int x, int y);
     virtual void doSomething() = 0;
-    virtual void isAnnoyed(int hp) {}
+    virtual void isAnnoyed(int hp) {};
 
 private:
     StudentWorld* m_world;
