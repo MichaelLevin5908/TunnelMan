@@ -25,13 +25,13 @@ void Actor::moveTo(int x, int y)
 
 Man::Man(StudentWorld* world, int imageID, int startX, int startY, Direction dir, int hp):Actor(world, imageID, startX, startY, dir, 1.0, 0), m_hp(hp) {}
 
-Tunnelman::Tunnelman(StudentWorld* world):Man(world, TID_PLAYER, 30, 60, right, 10), m_waterAmmo(5), m_sonar(1), m_gold(0) {}
+Tunnelman::Tunnelman(StudentWorld* world):Man(world, TID_PLAYER, 30, 60, right, 10), m_wtr(5), m_sonar(1), m_gld(0) {}
 
 void Tunnelman::add(int id)
 {
     if (id == TID_WATER_POOL) 
     {
-        m_waterAmmo += 5;
+        m_wtr += 5;
     }
     else if (id == TID_SONAR) 
     {
@@ -39,7 +39,7 @@ void Tunnelman::add(int id)
     }
     else if (id == TID_GOLD) 
     {
-        m_gold++;
+        m_gld++;
     }
 }
 
@@ -76,8 +76,8 @@ void Tunnelman::doSomething()
                 moveInDirection(down);
                 break;
             case KEY_PRESS_SPACE:
-                if (m_waterAmmo > 0) {
-                    m_waterAmmo--;
+                if (m_wtr > 0) {
+                    m_wtr--;
                     shoot();
                 }
                 break;
@@ -90,9 +90,9 @@ void Tunnelman::doSomething()
                 }
                 break;
             case KEY_PRESS_TAB:
-                if (m_gold > 0) {
+                if (m_gld > 0) {
                     getWorld()->addActor(new Gold(getWorld(), getX(), getY(), true, true));
-                    m_gold--;
+                    m_gld--;
                 }
                 break;
         }

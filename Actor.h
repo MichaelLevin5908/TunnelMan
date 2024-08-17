@@ -44,18 +44,18 @@ class Tunnelman : public Man
 public:
     Tunnelman(StudentWorld* world);
     void add(int id);
-    inline int getWaterAmmo() const { return m_waterAmmo; }
+    inline int getWtr() const { return m_wtr; }
     inline int getSonar() const { return m_sonar; }
-    inline int getGold() const { return m_gold; }
+    inline int getGld() const { return m_gld; }
     virtual void doSomething();
     void shoot();
     virtual void isAnnoyed(int hp);
     virtual void moveInDirection(Direction direction);
 
 private:
-    int m_waterAmmo;
+    int m_wtr;
     int m_sonar;
-    int m_gold;
+    int m_gld;
 };
 
 class Earth : public Actor
