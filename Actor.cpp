@@ -405,7 +405,7 @@ void Protester::doSomething()
     {
         if (getX() == 60 && getY() == 60)
         {
-            die();
+            getWorld()->moveToExit(this);
             getWorld()->decProtester();
         }
         else
@@ -607,7 +607,7 @@ void Protester::isAnnoyed(int hp)
     int score = (hp == 100) ? 500 : (getID() == TID_PROTESTER) ? 100 : 250;
     getWorld()->increaseScore(score);
 
-    die();
+    getWorld()->moveToExit(this);
 }
 
 void Protester::isStunned()
@@ -623,7 +623,7 @@ void Protester::isBribed()
 
     if (getID() == TID_PROTESTER)
     {
-        die();
+        getWorld()->moveToExit(this);
         m_isLeaving = true;
     }
     else

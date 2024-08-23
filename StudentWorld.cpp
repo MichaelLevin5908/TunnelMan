@@ -40,21 +40,29 @@ void StudentWorld::setDisplayText()
     setGameStatText(s);
 }
 
-string StudentWorld::displayText(int level, int lives, int health, int squirts, int gold, int barrels, int sonar, int score)
+string StudentWorld::displayText(int score, int level, int lives, int health, int squirts, int gold, int sonar, int barrels)
 {
-    stringstream s;
-    s.fill('0');
-    s << "Lvl: " << setw(2) << level;
-    s.fill(' ');
-    s << "  Lives: " << setw(1) << lives;
-    s << "  Hlth: " << setw(3) << health * 10 << '%';
-    s << "  Wtr: " << setw(2) << squirts;
-    s << "  Gld: " << setw(2) << gold;
-    s << "  Oil Left: " << setw(2) << barrels;
-    s << "  Sonar: " << setw(2) << sonar;
-    s.fill('0');
-    s << "  Scr: " << setw(6) << score;
-    return s.str();
+	stringstream s;
+	s.fill('0');
+	s << "Scr: ";				
+	s << setw(6) << score;
+	s.fill(' ');
+	s << " Lvl: ";				
+	s << setw(2) << level;
+	s << " Lives: ";			
+	s << setw(1) << lives;
+	s << "  Hlth: ";				
+	s << setw(3) << health * 10;
+	s << '%';
+	s << "  Wtr: ";			
+	s << setw(2) << squirts;
+	s << "  Gld: ";				
+	s << setw(2) << gold;
+	s << "  Sonar: ";				
+	s << setw(2) << sonar;
+	s << "  Oil Left: ";
+	s << setw(2) << barrels;
+	return s.str();
 }
 
 void StudentWorld::removeEarthAt(int x, int y, bool* cleared)
