@@ -29,42 +29,43 @@ void StudentWorld::setDisplayText()
 {
     int level = getLevel();
     int lives = getLives();
-    int health = m_player->gethp();
+    int health = m_player->gethp() * 10;  // Convert health to percentage
     int squirts = m_player->getWtr();
     int gold = m_player->getGld();
     int barrelsLeft = m_numBarrelsLeft;
     int sonar = m_player->getSonar();
     int score = getScore();
 
+    // Create the display text string
     string s = displayText(score, level, lives, health, squirts, gold, sonar, barrelsLeft);
-    setGameStatText(s);
+    setGameStatText(s);  // Update the display text at the top of the screen
 }
 
-string StudentWorld::displayText(int score, int level, int lives, int health, int squirts, int gold, int sonar, int barrels)
+string StudentWorld::displayText(int score, int level, int lives, int health, int squirts, int gold, int sonar, int barrelsLeft)
 {
-	stringstream s;
-	s.fill('0');
-	s << "Scr: ";				
-	s << setw(6) << score;
-	s.fill(' ');
-	s << " Lvl: ";				
-	s << setw(2) << level;
-	s << " Lives: ";			
-	s << setw(1) << lives;
-	s << "  Hlth: ";				
-	s << setw(3) << health * 10;
-	s << '%';
-	s << "  Wtr: ";			
-	s << setw(2) << squirts;
-	s << "  Gld: ";				
-	s << setw(2) << gold;
-	s << "  Sonar: ";				
-	s << setw(2) << sonar;
-	s << "  Oil Left: ";
-	s << setw(2) << barrels;
+    ostringstream oss;
+    oss << "Scr: ";
+    oss.fill('0');
+    oss << setw(6) << score;
+    oss << "  Lvl: ";
+    oss.fill(' ');
+    oss << setw(2) << level;
+    oss << "  Lives: ";
+    oss << setw(1) << lives;
+    oss << "  Hlth: ";
+    oss << setw(3) << health;
+    oss << "%  Wtr: ";
+    oss << setw(2) << squirts;
+    oss << "  Gld: ";
+    oss << setw(2) << gold;
+    oss << "  Sonar: ";
+    oss << setw(2) << sonar;
+    oss << "  Oil left: ";
+    oss << setw(2) << barrelsLeft;
 
-	return s.str();
+    return oss.str();
 }
+
 
 void StudentWorld::removeEarthAt(int x, int y, bool* cleared)
 {
