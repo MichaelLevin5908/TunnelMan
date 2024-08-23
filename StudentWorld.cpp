@@ -29,16 +29,16 @@ void StudentWorld::setDisplayText()
 {
     int level = getLevel();
     int lives = getLives();
-    int health = m_player->gethp() * 10;  // Convert health to percentage
+    int health = m_player->gethp() * 10; 
     int squirts = m_player->getWtr();
     int gold = m_player->getGld();
     int barrelsLeft = m_numBarrelsLeft;
     int sonar = m_player->getSonar();
     int score = getScore();
 
-    // Create the display text string
+    
     string s = displayText(score, level, lives, health, squirts, gold, sonar, barrelsLeft);
-    setGameStatText(s);  // Update the display text at the top of the screen
+    setGameStatText(s); 
 }
 
 string StudentWorld::displayText(int score, int level, int lives, int health, int squirts, int gold, int sonar, int barrelsLeft)
