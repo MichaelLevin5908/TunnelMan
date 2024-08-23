@@ -310,37 +310,6 @@ void StudentWorld::initializeMaze()
     std::fill(&m_maze[0][0], &m_maze[0][0] + sizeof(m_maze) / sizeof(m_maze[0][0]), 0);
 }
 
-void StudentWorld::performBFS(int startX, int startY)
-{
-    std::queue<grid> q;
-    q.push(grid(startX, startY));
-    m_maze[startX][startY] = 1;
-
-    const int dx[] = {-1, 1, 0, 0};
-    const int dy[] = {0, 0, 1, -1};
-
-    while (!q.empty())
-    {
-        grid current = q.front();
-        q.pop();
-
-        int currentX = current.m_x;
-        int currentY = current.m_y;
-
-        for (int i = 0; i < 4; ++i)
-        {
-            int nextX = currentX + dx[i];
-            int nextY = currentY + dy[i];
-
-            if (canMoveInDirection(currentX, currentY, static_cast<GraphObject::Direction>(i)) && m_maze[nextX][nextY] == 0)
-            {
-                q.push(grid(nextX, nextY));
-                m_maze[nextX][nextY] = m_maze[currentX][currentY] + 1;
-            }
-        }
-    }
-}
-
 bool StudentWorld::isPlayerInRadius(Actor* actor, int radius)
 {
     return withInRadius(actor->getX(), actor->getY(), m_player->getX(), m_player->getY(), radius);
@@ -364,36 +333,62 @@ Protester* StudentWorld::protesterInRadius(Actor* actor, int radius)
     return nullptr;
 }
 
-void StudentWorld::moveToExit(Protester* pr)
+void StudentWorld::moveToExit(Protester *pr)
 {
     initializeMaze();
 
-    int startX = 60; 
-    int startY = 60;
-    int targetX = pr->getX();
-    int targetY = pr->getY();
+    int a = pr->getX();
+    int b = pr->getY();
+    queue<grid> q;
+    q.push(grid(60, 60));
+    m_maze[60][60] = 1;
 
-    performBFS(startX, startY);
+    while (!q.empty()) {
+        grid c = q.front();
+        q.pop();
+        int x = c.m_x;
+        int y = c.m_y;
+
+        const int dx[] = {-1, 1, 0, 0};  
+        const int dy[] = {0, 0, 1, -1};
+        const GraphObject::Direction directions[] = { GraphObject::left, GraphObject::right, GraphObject::up, GraphObject::down };
+
+        for (int i = 0; i < 4; ++i) {
+            int nextX = x + dx[i];
+            int nextY = y + dy[i];
+
+            if (nextX >= 0 && nextX < 64 && nextY >= 0 && nextY < 64 &&
+                canMoveInDirection(x, y, directions[i]) && m_maze[nextX][nextY] == 0) {
+                q.push(grid(nextX, nextY));
+                m_maze[nextX][nextY] = m_maze[x][y] + 1;
+            }
+        }
+    }
+
+    GraphObject::Direction bestDirection = GraphObject::none;
+    int minMazeValue = m_maze[a][b];
 
     const int dx[] = {-1, 1, 0, 0};
     const int dy[] = {0, 0, 1, -1};
-    const GraphObject::Direction directions[] = {
-        GraphObject::left, GraphObject::right,
-        GraphObject::up, GraphObject::down};
+    const GraphObject::Direction directions[] = { GraphObject::left, GraphObject::right, GraphObject::up, GraphObject::down};
 
-    for (int i = 0; i < 4; ++i)
-    {
-        int nextX = targetX + dx[i];
-        int nextY = targetY + dy[i];
+    for (int i = 0; i < 4; ++i) {
+        int nextX = a + dx[i];
+        int nextY = b + dy[i];
 
-        if (canMoveInDirection(targetX, targetY, directions[i]) &&
-            m_maze[nextX][nextY] < m_maze[targetX][targetY])
-        {
-            pr->moveInDirection(directions[i]);
-            break;
+        if (nextX >= 0 && nextX < 64 && nextY >= 0 && nextY < 64 &&
+            canMoveInDirection(a, b, directions[i]) && m_maze[nextX][nextY] < minMazeValue) {
+            bestDirection = directions[i];
+            minMazeValue = m_maze[nextX][nextY];
         }
     }
+
+    if (bestDirection != GraphObject::none) {
+        pr->setDirection(bestDirection);  
+        pr->moveInDirection(bestDirection);  
+    }
 }
+
 
 void StudentWorld::addEarth()
 {
