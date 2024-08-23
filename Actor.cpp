@@ -127,6 +127,10 @@ void Tunnelman::shoot()
         getWorld()->addActor(new Squirt(getWorld(), targetX, targetY, getDirection()));
         getWorld()->playSound(SOUND_PLAYER_SQUIRT);
     }
+    else
+    {
+        getWorld()->playSound(SOUND_PLAYER_SQUIRT);
+    }
 }
 
 void Tunnelman::isAnnoyed(int hp)
