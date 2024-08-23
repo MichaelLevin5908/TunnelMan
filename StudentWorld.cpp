@@ -36,7 +36,7 @@ void StudentWorld::setDisplayText()
     int sonar = m_player->getSonar();
     int score = getScore();
 
-    string s = displayText(level, lives, health, squirts, gold, barrelsLeft, sonar, score);
+    string s = displayText(score, level, lives, health, squirts, gold, sonar, barrelsLeft);
     setGameStatText(s);
 }
 
