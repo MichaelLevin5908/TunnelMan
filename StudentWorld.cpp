@@ -62,6 +62,7 @@ string StudentWorld::displayText(int score, int level, int lives, int health, in
 	s << setw(2) << sonar;
 	s << "  Oil Left: ";
 	s << setw(2) << barrels;
+
 	return s.str();
 }
 
