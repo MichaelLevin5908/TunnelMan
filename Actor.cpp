@@ -619,6 +619,7 @@ void Protester::isBribed()
 
     if (getID() == TID_PROTESTER)
     {
+        die();
         m_isLeaving = true;
     }
     else
