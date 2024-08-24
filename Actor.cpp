@@ -85,7 +85,7 @@ void Tunnelman::doSomething()
             case 'Z':
                 if (m_sonar > 0) {
                     m_sonar--;
-                    getWorld()->ActorsWithInRadius(getX(), getY(), 12);
+                    getWorld()->actorsInRadius(getX(), getY(), 12);
                     getWorld()->playSound(SOUND_SONAR);
                 }
                 break;
@@ -225,7 +225,7 @@ void Boulder::doSomething()
 
 void Boulder::annoyMan()
 {
-    if (getWorld()->isPlayerInRadius(this, 3)) {
+    if (getWorld()->playerInRadius(this, 3)) {
         getWorld()->getPlayer()->isAnnoyed(100);
     }
     
@@ -305,13 +305,13 @@ void Barrel::doSomething() {
     if (!isAlive()) return;
 
     if (!isVisible()) {
-        if (getWorld()->isPlayerInRadius(this, 4)) {
+        if (getWorld()->playerInRadius(this, 4)) {
             setVisible(true);
         }
         return;
     }
 
-    if (getWorld()->isPlayerInRadius(this, 3)) {
+    if (getWorld()->playerInRadius(this, 3)) {
         getWorld()->playSound(SOUND_FOUND_OIL);
         getWorld()->increaseScore(1000);
         getWorld()->decBarrel();
@@ -328,12 +328,12 @@ Gold::Gold(StudentWorld* world, int startX, int startY, bool isVisible, bool dro
 void Gold::doSomething() {
     if (!isAlive()) return;
 
-    if (!isVisible() && getWorld()->isPlayerInRadius(this, 4)) {
+    if (!isVisible() && getWorld()->playerInRadius(this, 4)) {
         setVisible(true);
         return;
     }
 
-    if (getWorld()->isPlayerInRadius(this, 3)) {
+    if (getWorld()->playerInRadius(this, 3)) {
         if (!isDropped) {
             die();
             getWorld()->playSound(SOUND_GOT_GOODIE);
@@ -356,7 +356,7 @@ Goodie::Goodie(StudentWorld* world, int imageID, int startX, int startY):Pickupa
 void Goodie::doSomething() {
     if (!isAlive()) return;
 
-    if (getWorld()->isPlayerInRadius(this, 3)) {
+    if (getWorld()->playerInRadius(this, 3)) {
         getWorld()->playSound(SOUND_GOT_GOODIE);
         getWorld()->getPlayer()->add(getID());
         getWorld()->increaseScore(75);
@@ -417,7 +417,7 @@ void Protester::doSomething()
         return;
     }
 
-    if (getWorld()->isPlayerInRadius(this, 4) && isFacingPlayer() && m_yellCooldown > 15)
+    if (getWorld()->playerInRadius(this, 4) && isFacingPlayer() && m_yellCooldown > 15)
     {
         getWorld()->getPlayer()->isAnnoyed(2);
         getWorld()->playSound(SOUND_PROTESTER_YELL);
@@ -437,7 +437,7 @@ void Protester::doSomething()
         }
 
     Direction d = directionToPlayer();
-    if (d != none && straightPathToPlayer(d) && !getWorld()->isPlayerInRadius(this, 4))
+    if (d != none && isPathToPlayerClear(d) && !getWorld()->playerInRadius(this, 4))
     {
         setDirection(d);
         moveInDirection(d);
@@ -460,7 +460,7 @@ void Protester::doSomething()
 
     else if (isAtIntersection() && m_ticksSinceLastTurn > 200)
     {
-        pickViableDirectionToTurn();
+        pickDirectionToTurn();
         m_ticksSinceLastTurn = 0;
         randomNumToMove();
     }
@@ -523,7 +523,7 @@ GraphObject::Direction Protester::directionToPlayer()
     return none;
 }
 
-bool Protester::straightPathToPlayer(Direction direction)
+bool Protester::isPathToPlayerClear(Direction direction)
 {
     int playerX = getWorld()->getPlayer()->getX();
     int playerY = getWorld()->getPlayer()->getY();
@@ -566,7 +566,7 @@ bool Protester::isAtIntersection()
     return (getDirection() == up || getDirection() == down) ?(getWorld()->canMoveInDirection(getX(), getY(), left) ||  getWorld()->canMoveInDirection(getX(), getY(), right)) :(getWorld()->canMoveInDirection(getX(), getY(), up) || getWorld()->canMoveInDirection(getX(), getY(), down));
 }
 
-void Protester::pickViableDirectionToTurn()
+void Protester::pickDirectionToTurn()
 {
     Direction dir1, dir2;
 

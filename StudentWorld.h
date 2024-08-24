@@ -38,15 +38,15 @@ public:
     void addProtesters();
     void decBarrel();
     void decProtester();
-    bool withInRadius(int x1, int y1, int x2, int y2, int radius); 
-    bool ActorsWithInRadius(int x, int y, int radius);  
-    void addBoulderorGoldorBarrel(int num, char actor);
+    bool inRadius(int x1, int y1, int x2, int y2, int radius); 
+    bool actorsInRadius(int x, int y, int radius);  
+    void addGoldorBarrelorBoulder(int num, char actor);
     bool isThereEarth(int x, int y);
     bool isEarthPresent(int x, int y, bool checkOnlyAbove);
     bool isCompleted() const;
     bool isThereBoulder(int x, int y, int radius = 3);
     bool canMoveInDirection(int x, int y, GraphObject::Direction direction);
-    bool isPlayerInRadius(Actor* actor, int radius);
+    bool playerInRadius(Actor* actor, int radius);
     Protester* protesterInRadius(Actor* actor, int radius);
     void moveToExit(Protester* pr);
     

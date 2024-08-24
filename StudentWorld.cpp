@@ -36,7 +36,6 @@ void StudentWorld::setDisplayText()
     int sonar = m_player->getSonar();
     int score = getScore();
 
-    
     string s = displayText(score, level, lives, health, squirts, gold, sonar, barrelsLeft);
     setGameStatText(s); 
 }
@@ -115,7 +114,6 @@ void StudentWorld::addGoodies()
             static std::vector<int> validX;
             static std::vector<int> validY;
 
-            
             validX.clear();
             validY.clear();
 
@@ -181,18 +179,18 @@ void StudentWorld::decProtester()
     m_numActiveProtesters--;
 }
 
-bool StudentWorld::withInRadius(int x1, int y1, int x2, int y2, int radius)
+bool StudentWorld::inRadius(int x1, int y1, int x2, int y2, int radius)
 {
     return (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2) <= radius * radius;
 }
 
-bool StudentWorld::ActorsWithInRadius(int x, int y, int radius)
+bool StudentWorld::actorsInRadius(int x, int y, int radius)
 {
     for (Actor* actor : m_actors)
     {
         int actorX = actor->getX();
         int actorY = actor->getY();
-        if (withInRadius(x, y, actorX, actorY, radius))
+        if (inRadius(x, y, actorX, actorY, radius))
         {
             return true;
         }
@@ -200,7 +198,7 @@ bool StudentWorld::ActorsWithInRadius(int x, int y, int radius)
     return false;
 }
 
-void StudentWorld::addBoulderorGoldorBarrel(int num, char actor)
+void StudentWorld::addGoldorBarrelorBoulder(int num, char actor)
 {
     int x, y;
     int yMin = 1;
@@ -212,7 +210,7 @@ void StudentWorld::addBoulderorGoldorBarrel(int num, char actor)
         {
             x = rand() % 60 + 1;
             y = rand() % (yMax - yMin + 1) + yMin;
-        } while (ActorsWithInRadius(x, y, 6) || (x > 26 && x < 34 && y > 0));
+        } while (actorsInRadius(x, y, 6) || (x > 26 && x < 34 && y > 0));
 
         switch (actor)
         {
@@ -280,7 +278,7 @@ bool StudentWorld::isThereBoulder(int x, int y, int radius)
     for (std::vector<Actor*>::iterator it = m_actors.begin(); it != m_actors.end(); ++it)
     {
         Actor* actor = *it;
-        if (actor->getID() == TID_BOULDER && withInRadius(x, y, actor->getX(), actor->getY(), radius))
+        if (actor->getID() == TID_BOULDER && inRadius(x, y, actor->getX(), actor->getY(), radius))
         {
             return true;
         }
@@ -311,9 +309,9 @@ void StudentWorld::initializeMaze()
     std::fill(&m_maze[0][0], &m_maze[0][0] + sizeof(m_maze) / sizeof(m_maze[0][0]), 0);
 }
 
-bool StudentWorld::isPlayerInRadius(Actor* actor, int radius)
+bool StudentWorld::playerInRadius(Actor* actor, int radius)
 {
-    return withInRadius(actor->getX(), actor->getY(), m_player->getX(), m_player->getY(), radius);
+    return inRadius(actor->getX(), actor->getY(), m_player->getX(), m_player->getY(), radius);
 }
 
 Protester* StudentWorld::protesterInRadius(Actor* actor, int radius)
@@ -325,7 +323,7 @@ Protester* StudentWorld::protesterInRadius(Actor* actor, int radius)
     {
         if (act->getID() == TID_PROTESTER || act->getID() == TID_HARD_CORE_PROTESTER)
         {
-            if (withInRadius(actorX, actorY, act->getX(), act->getY(), radius))
+            if (inRadius(actorX, actorY, act->getX(), act->getY(), radius))
             {
                 return dynamic_cast<Protester*>(act);
             }
@@ -411,7 +409,7 @@ void StudentWorld::addEarth()
 
 void StudentWorld::addGameObjects(char objectType, int numObjects)
 {
-    addBoulderorGoldorBarrel(numObjects, objectType);
+    addGoldorBarrelorBoulder(numObjects, objectType);
 }
 
 int StudentWorld::init()

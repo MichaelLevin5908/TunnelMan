@@ -149,10 +149,10 @@ public:
     void isStunned();
     bool isFacingPlayer();
     Direction directionToPlayer();
-    bool straightPathToPlayer(Direction direction);
+    bool isPathToPlayerClear(Direction direction);
     Direction randomDirection();
     bool isAtIntersection();
-    void pickViableDirectionToTurn();
+    void pickDirectionToTurn();
 
 private:
     void setOppositeDirection();
