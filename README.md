@@ -12,9 +12,6 @@ The **TunnelMan Project** is a game developed in C++ where players navigate thro
 - Level progression system
 - Custom class hierarchy including actors like TunnelMan, Boulders, and Protesters
 
-![TunnelMan Game Logo](tunnelman.png)
-
-
 ## Video Demonstration
 https://www.youtube.com/watch?v=Ks8YXHNCtBQ
 
